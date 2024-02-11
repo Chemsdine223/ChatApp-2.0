@@ -55,11 +55,11 @@ function setupSocket(server) {
       console.log(socket.id, "disconnected");
       activeUsers.delete(socket.id);
 
-      socket.broadcast.emit({
-        message: `Connected as ${socket.id}`,
-        users: Array.from(activeUsers),
-      });
-      console.log("emitted");
+      // socket.broadcast.emit({
+      //   message: `Connected as ${socket.id}`,
+      //   users: Array.from(activeUsers),
+      // });
+      // console.log("emitted");
     });
 
     socket.on("isOnline", (data) => {
