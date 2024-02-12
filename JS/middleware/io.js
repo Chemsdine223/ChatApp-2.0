@@ -44,16 +44,19 @@ function setupSocket(server) {
 
     io.emit("connected", {
       message: `Connected as ${socket.id}`,
-      users: Array.from(activeUsers),
     });
 
-    // io.emit("onlineUsers", {
-    //   users: activeUsers
-    // })
+    io.emit("onlineUsers", {
+      users: Array.from(activeUsers),
+    });
 
     socket.on("disconnect", () => {
       console.log(socket.id, "disconnected");
       activeUsers.delete(socket.id);
+
+      io.emit("onlineUsers", {
+        users: Array.from(activeUsers),
+      });
 
       // socket.broadcast.emit({
       //   message: `Connected as ${socket.id}`,
@@ -62,13 +65,33 @@ function setupSocket(server) {
       // console.log("emitted");
     });
 
+    socket.on("typing", (data) => {
+      const parsed = JSON.parse(data);
+      console.log(parsed.id);
+      io.to(parsed.id).emit("typing", {
+        receiverId: parsed.id,
+        senderId: parsed.sender,
+        conversationId: parsed.conversationId,
+      });
+    });
+
+    socket.on("stoppedTyping", (data) => {
+      const parsed = JSON.parse(data);
+      console.log(parsed.id);
+      io.to(parsed.id).emit("stoppedTyping", {
+        receiverId: parsed.id,
+        senderId: parsed.sender,
+        conversationId: parsed.conversationId,
+      });
+    });
+
     socket.on("isOnline", (data) => {
       try {
         const parsed = JSON.parse(data);
         const userId = parsed.id;
-    
+
         const isOnline = activeUsers.has(userId);
-    
+
         io.to(socket.id).emit("isOnline", {
           status: isOnline,
         });
