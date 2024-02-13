@@ -1,11 +1,18 @@
 import 'dart:convert';
+import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter_contacts/flutter_contacts.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:chat_app/Logic/Models/conversation.dart';
 import 'package:chat_app/Logic/Models/user.dart';
 import 'package:http/http.dart' as http;
 import 'package:chat_app/Logic/Network/socket_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../../Constants/constants.dart';
+// import '';
 
 // import 'package:chat_app/Logic/Network/socket_service.dart';
 
@@ -63,18 +70,18 @@ class NetworkServices {
     String username,
     String firstname,
     String lastname,
-    // String password,
     String phone,
+    String avatar,
   ) async {
     final response = await http.post(
       headers: {'Content-Type': 'application/json'},
       Uri.parse(registerUrl),
       body: jsonEncode({
         "username": username,
-        // "password": password,
         "firstname": firstname,
         "lastname": lastname,
         "phone": phone,
+        "avatar": avatar,
       }),
     );
     final data = jsonDecode(response.body);
@@ -101,13 +108,16 @@ class NetworkServices {
       // connectAndListen();
 
       await saveTokens();
+      log('tokens saved and here they are $id $key');
+      SocketService().initConnection();
+      log('initialized connection');
 
       return userModel;
     } else if (response.statusCode == 400) {
       throw data['message'];
     } else {
       // print(data);
-      throw 'message';
+      throw data['message'];
     }
   }
 
@@ -210,6 +220,32 @@ class NetworkServices {
       return conversations;
     } else {
       throw jsonDecode(response.body)['message'];
+    }
+  }
+
+  
+  
+  Future<String> uploadAvatar(XFile? avatar) async {
+    final File avatarFile = File(avatar!.path);
+
+    try {
+      await supabase.storage.from('avatars').upload(
+            'avatars/${avatar.name}',
+            avatarFile,
+            fileOptions: const FileOptions(cacheControl: '3600', upsert: false),
+          );
+
+      final imageUrlResponse = await supabase.storage
+          .from('avatars')
+          .createSignedUrl('avatars/${avatar.name}', 60 * 60 * 24 * 365 * 10);
+      print('Successfully uploaded');
+
+      print(imageUrlResponse);
+      return imageUrlResponse;
+    } on StorageException catch (e) {
+      throw e.statusCode == '409'
+          ? 'You already uploaded this image'
+          : e.message;
     }
   }
 }

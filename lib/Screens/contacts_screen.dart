@@ -22,6 +22,11 @@ class _ContactScreenState extends State<ContactScreen> {
     // final convoState = context.watch<ConversationsCubit>();
     // log(convoState.state.toString());
     return Scaffold(
+        // floatingActionButton: FloatingActionButton(
+        //   // onPressed: () {
+        //   //   SocketService().checkStatus(widget);
+        //   // },
+        // ),
         appBar: AppBar(
           title: const Text('Contacts'),
         ),
@@ -44,6 +49,8 @@ class _ContactScreenState extends State<ContactScreen> {
                           widget.conversations,
                           state.contacts[index].phones[0].number,
                           context);
+                      conversationsCubit.getConversations();
+                      Navigator.pop(context);
                     },
                     leading: CircleAvatar(
                       backgroundColor: Colors.grey.shade200,

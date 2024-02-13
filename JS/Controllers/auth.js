@@ -9,9 +9,11 @@ const crypto = require("crypto");
 
 exports.register = async (req, res, next) => {
   console.log(req.body);
-  const { username, phone, firstname, lastname } = req.body;
+  const { username, phone, firstname, lastname, avatar } = req.body;
   const apiKey = crypto.randomBytes(16).toString("hex");
-  console.log({apiKey});
+  console.log({ apiKey });
+
+  console.log({avatar});
 
   try {
     const user = await User.create({
@@ -19,10 +21,10 @@ exports.register = async (req, res, next) => {
       phone,
       firstname,
       lastname,
+      avatar,
     });
 
     if (user) {
-      
       console.log(apiKey);
 
       await Keys.create({
@@ -33,12 +35,12 @@ exports.register = async (req, res, next) => {
 
     res.status(200).json({
       user: user,
-      key: apiKey
-    })
+      key: apiKey,
+    });
   } catch (error) {
     res.status(500).json({
-      error: error.message
-    })
+      error: error.message,
+    });
   }
 };
 

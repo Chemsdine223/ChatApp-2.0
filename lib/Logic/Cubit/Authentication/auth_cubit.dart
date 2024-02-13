@@ -2,19 +2,20 @@ import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:chat_app/Logic/Models/user.dart';
 import 'package:chat_app/Logic/Network/network_services.dart';
 
-part 'auth_state.dart';
+part 'auth_cubit_state.dart';
 
-class AuthCubit extends Cubit<AuthState> {
-  AuthCubit() : super(AuthInitial()) {
+class AuthenticationCubit extends Cubit<AuthenticationState> {
+  AuthenticationCubit() : super(AuthenticationInitial()) {
     getUser();
   }
 
   Future getUser() async {
-    emit(AuthLoading());
+    emit(AuthenticationLoading());
     await Future.delayed(const Duration(seconds: 3));
 
     SharedPreferences preferences = await SharedPreferences.getInstance();
@@ -37,16 +38,31 @@ class AuthCubit extends Cubit<AuthState> {
     String firstname,
     String lastname,
     String phone,
+    XFile? avatar,
   ) async {
-    emit(AuthLoading());
+    emit(AuthenticationLoading());
     try {
-      final response = await NetworkServices()
-          .register(username, firstname, lastname, phone);
+      final String avatarUrl = await NetworkServices().uploadAvatar(avatar);
+      final response = await NetworkServices().register(
+        username,
+        firstname,
+        lastname,
+        phone,
+        avatarUrl,
+      );
 
       emit(RegisteredUser(response));
     } catch (e) {
-      emit(AuthError(e.toString()));
+      emit(
+        AuthenticationError(
+          e.toString(),
+        ),
+      );
     }
+  }
+
+  void resetInCaseOfError() {
+    emit(NewUser());
   }
 
   void disconnect() {

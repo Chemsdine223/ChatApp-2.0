@@ -15,8 +15,32 @@ final providerOfSocket = StreamProvider((ref) async* {
   SocketService().socket.onDisconnect((_) => connectionCubit.disconnected());
   SocketService().socket.onReconnect((data) => connectionCubit.connecting());
   SocketService().socket.on('connected', (_) {
+    log(_.toString());
     connectionCubit.reset();
     conversationsCubit.getConversations();
+  });
+
+  // SocketService().socket.on('onlineUsers', (data) {
+  //   onlineStatusCubit.checkOnlineStatus(false, data['users']);
+  //   log('$data The man dem');
+  // });
+
+  // final Map<String, String> typingStatusMap = {};
+  SocketService().socket.on('typing', (data) {
+    final conversationId = data['conversationId'];
+    // typingStatusMap[conversationId] = conversationId;
+    typingStatusCubit.handleTypingStatus(conversationId, true);
+    // log(typingStatusMap.toString());
+    // TypingStatusCubit();
+  });
+
+  SocketService().socket.on('stoppedTyping', (data) {
+    final conversationId = data['conversationId'];
+    // typingStatusMap.remove(conversationId);
+    typingStatusCubit.handleTypingStatus(conversationId, false);
+    // typingStatusMap[conversationId] = conversationId;
+    // log(typingStatusMap.toString());
+    // TypingStatusCubit();
   });
 
   List<Message> messages = [];
@@ -26,6 +50,17 @@ final providerOfSocket = StreamProvider((ref) async* {
     stream.add(messages);
     conversationsCubit.processReceivedMessage(message);
   });
+
+  SocketService().socket.on('onlineUsers', (data) {
+    log('isOnline $data');
+    onlineStatusCubit.checkOnlineStatus(false, data['users']);
+  });
+
+  // SocketService().socket.on('onlineUsers', (data) {
+  //   log('isOnline $data');
+  //   onlineStatusCubit.checkOnlineStatus(false, data['users']);
+  // });
+
   print('Messages List $messages');
 
   SocketService().socket.onerror((_) {

@@ -47,6 +47,9 @@ dependencies:
   hooks_riverpod: ^2.4.9
   permission_handler: ^11.0.1
   flutter_contacts: ^1.1.7+1
+  supabase_flutter: ^2.3.3
+  file_picker: ^6.1.1
+  image_picker: ^1.0.7
   # firebase_storage: ^11.6.0
   # firebase_core: ^2.24.2
 

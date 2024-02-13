@@ -41,6 +41,12 @@
 			<string>UIInterfaceOrientationLandscapeLeft</string>
 			<string>UIInterfaceOrientationLandscapeRight</string>
 		</array>
+		<key>NSCameraUsageDescription</key>
+		<string> App wants to access your camera</string>
+		<key>NSMicrophoneUsageDescription</key>
+		<string> App wants to access your gallery</string>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string> App wants to access your microphone</string>
 		<key>UIViewControllerBasedStatusBarAppearance</key>
 		<false/>
 		<key>CADisableMinimumFrameDurationOnPhone</key>

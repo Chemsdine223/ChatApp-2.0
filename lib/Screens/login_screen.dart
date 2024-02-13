@@ -1,6 +1,9 @@
-import 'package:chat_app/Logic/Cubit/Authentication/auth_cubit.dart';
+import 'package:chat_app/Layouts/confirmation_form.dart';
+import 'package:chat_app/Layouts/registration_form.dart';
+import 'package:chat_app/Logic/Cubit/RegistrationFormCubit/registration_form_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 
 // import '../Logic/Models/user.dart';
 
@@ -12,15 +15,20 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final _username = TextEditingController();
-  final _firstname = TextEditingController();
-  final _lastname = TextEditingController();
-  final _phone = TextEditingController();
+  final picker = ImagePicker();
+  XFile? screenShot;
+  String imagePath = '';
+
+  // int currentState = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {
+      //     SocketService().initConnection();
+      //   },
+      // ),
       backgroundColor: Colors.grey.shade900,
       appBar: AppBar(
           backgroundColor: Colors.grey.shade900,
@@ -53,125 +61,16 @@ class _LoginScreenState extends State<LoginScreen> {
           )),
 
       // backgroundColor: Colors.grey[900],
-      body: Form(
-        key: _formKey,
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            // mainAxisAlignment: MainAxisAlignment. d,
-            children: [
-              const SizedBox(
-                height: 140,
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey.shade600),
-                  borderRadius: BorderRadius.circular(8),
-                  color: Colors.grey.shade300,
-                ),
-                child: TextFormField(
-                  cursorColor: Colors.greenAccent,
-                  decoration: const InputDecoration(
-                    hintText: 'Enter your username',
-                    border: InputBorder.none,
-                  ),
-                  controller: _username,
-                ),
-              ),
-              const SizedBox(
-                height: 16,
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey.shade600),
-                  borderRadius: BorderRadius.circular(8),
-                  color: Colors.grey.shade300,
-                ),
-                child: TextFormField(
-                  cursorColor: Colors.greenAccent,
-                  decoration: const InputDecoration(
-                    hintText: 'Enter your phone',
-                    border: InputBorder.none,
-                  ),
-                  controller: _phone,
-                ),
-              ),
-              const SizedBox(
-                height: 16,
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey.shade600),
-                  borderRadius: BorderRadius.circular(8),
-                  color: Colors.grey.shade300,
-                ),
-                child: TextFormField(
-                  cursorColor: Colors.greenAccent,
-                  decoration: const InputDecoration(
-                    hintText: 'Enter your firstname',
-                    border: InputBorder.none,
-                  ),
-                  controller: _firstname,
-                ),
-              ),
-              const SizedBox(
-                height: 16,
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey.shade600),
-                  borderRadius: BorderRadius.circular(8),
-                  color: Colors.grey.shade300,
-                ),
-                child: TextFormField(
-                  cursorColor: Colors.greenAccent,
-                  decoration: const InputDecoration(
-                    hintText: 'Enter your lastname',
-                    border: InputBorder.none,
-                  ),
-                  controller: _lastname,
-                ),
-              ),
-              const SizedBox(
-                height: 16,
-              ),
-              GestureDetector(
-                onTap: () => context.read<AuthCubit>().register(
-                      _username.text,
-                      _firstname.text,
-                      _lastname.text,
-                      _phone.text,
-                    ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.green,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        height: 40,
-                        child: const Center(
-                          child: Text(
-                            'Register',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.white,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: BlocBuilder<RegistrationFormCubit, RegistrationFormState>(
+          builder: (context, state) {
+            if (state is RegistrationFormStepTwo) {
+              return const ConfirmationLayout();
+            } else {
+              return const RegistrationForm();
+            }
+          },
         ),
       ),
     );

@@ -1,5 +1,7 @@
 import 'dart:developer';
 
+import 'package:chat_app/Logic/Cubit/OnlineStatusCubit/online_status_cubit.dart';
+import 'package:chat_app/Logic/Cubit/TypingStatusCubit/typing_status_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -136,27 +138,83 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 child: ListView.builder(
                   itemCount: state.conversations.length,
                   itemBuilder: (context, index) {
-                    print(state.conversations[index].messages.last.content);
+                    final conversation = state.conversations[index];
+                    // print(state.conversations[index].messages.last.content);
                     return ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: Colors.grey.shade300,
+                      trailing:
+                          BlocBuilder<TypingStatusCubit, TypingStatusState>(
+                        builder: (context, state) {
+                          // if (state is Typing) {
+                          final typingUserId =
+                              state.typingStatusMap[conversation.id];
+                          return Text(
+                              typingUserId != null ? ' is typing...' : '');
+                          // }
+                          // return const Text('');
+                        },
+                      ),
+                      leading: SizedBox(
+                        height: 40,
+                        width: 40,
+                        // color: Colors.red,
+                        child: Stack(
+                          children: [
+                            CircleAvatar(
+                              backgroundColor: Colors.grey.shade300,
+                            ),
+                            Align(
+                              alignment: Alignment.bottomRight,
+                              child: BlocBuilder<OnlineStatusCubit,
+                                  OnlineStatusState>(
+                                builder: (context, state) {
+                                  if (state is OnlineStatus) {
+                                    List<String> stringList = state.onlineUsers
+                                        .map(
+                                          (dynamicItem) =>
+                                              dynamicItem.toString(),
+                                        )
+                                        .toList();
+
+                                    return Icon(
+                                      Icons.circle,
+                                      color: stringList.contains(
+                                        (conversation.users[0].id ==
+                                                NetworkServices.id
+                                            ? conversation.users[1].id
+                                            : conversation.users[0].id),
+                                      )
+                                          ? Colors.green
+                                          : Colors.grey.shade600,
+                                      size: 12,
+                                      // style: TextStyle(
+                                      //   color: Colors.grey.shade400,
+                                      //   fontSize: 12,
+                                      // ),
+                                    );
+                                  }
+                                  return const Text('Unknown');
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                       onTap: () {
                         Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ChatRoom(
-                                conversationId: state.conversations[index].id,
-                                username:
-                                    state.conversations[index].users[0].id ==
-                                            NetworkServices.id
-                                        ? state.conversations[index].users[1]
-                                            .username
-                                        : state.conversations[index].users[0]
-                                            .username,
-                                users: state.conversations[index].users,
-                              ),
-                            ));
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ChatRoom(
+                              conversationId: state.conversations[index].id,
+                              username: state
+                                          .conversations[index].users[0].id ==
+                                      NetworkServices.id
+                                  ? state.conversations[index].users[1].username
+                                  : state
+                                      .conversations[index].users[0].username,
+                              users: state.conversations[index].users,
+                            ),
+                          ),
+                        );
                         // print(state.conversations[index].id);
                       },
                       title: Text(state.conversations[index].users[0].id ==
@@ -178,9 +236,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             }
 
             // else {
-            return Container(
-              child: Text(state.toString()),
-            );
+            return Text(state.toString());
             // }
           },
         ),

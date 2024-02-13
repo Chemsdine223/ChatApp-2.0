@@ -9,12 +9,14 @@ sealed class OnlineStatusState extends Equatable {
 
 final class OnlineStatusInitial extends OnlineStatusState {}
 
-final class Online extends OnlineStatusState {
+final class OnlineStatus extends OnlineStatusState {
+  final bool status;
+  final List<dynamic> onlineUsers;
+
+  const OnlineStatus(this.status, this.onlineUsers);
+
   @override
-  List<Object> get props => [];
+  List<Object> get props => [status, onlineUsers];
 }
 
-final class Offline extends OnlineStatusState {
-  @override
-  List<Object> get props => [];
-}
+ 

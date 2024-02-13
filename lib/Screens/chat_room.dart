@@ -9,6 +9,7 @@ import 'package:chat_app/Logic/Network/socket_service.dart';
 import '../Logic/Cubit/ConversationsCubit/conversations_cubit.dart';
 
 import '../Logic/Cubit/SocketCubits/socket_connection_cubit.dart';
+import '../Logic/Cubit/TypingStatusCubit/typing_status_cubit.dart';
 import '../Logic/Network/network_services.dart';
 import '../Providers/provider.dart';
 import '../Widgets/chat_bubble.dart';
@@ -33,15 +34,7 @@ class ChatRoom extends ConsumerStatefulWidget {
 }
 
 class _ChatRoomState extends ConsumerState<ChatRoom> {
-  @override
-  void initState() {
-    // SocketService().checkStatus(
-    //   widget.users[0].id == NetworkServices.id
-    //       ? widget.users[1].id
-    //       : widget.users[0].id,
-    // );
-    super.initState();
-  }
+  String typing = '';
 
   @override
   Widget build(BuildContext context) {
@@ -50,8 +43,10 @@ class _ChatRoomState extends ConsumerState<ChatRoom> {
 
     return Scaffold(
         appBar: AppBar(
+          titleSpacing: 0,
+          // leading: null,
           // title: Text(widget.username),
-          centerTitle: true,
+          centerTitle: false,
           title: BlocBuilder<SocketConnectionCubit, SocketConnectionState>(
             builder: (context, state) {
               if (state is Connecting) {
@@ -60,27 +55,83 @@ class _ChatRoomState extends ConsumerState<ChatRoom> {
               if (state is Disconnected) {
                 return const Text('Waiting ...');
               }
-              return Column(
-                children: [
-                  Text(widget.username),
-                  BlocProvider(
-                    create: (context) => OnlineStatusCubit(
-                      widget.users[0].id == NetworkServices.id
-                          ? widget.users[1].id
-                          : widget.users[0].id,
-                    ),
-                    child: BlocBuilder<OnlineStatusCubit, OnlineStatusState>(
-                      builder: (context, state) {
-                        print(state);
-                        if (state is Online) {
-                          return const Text('Online');
-                        }
-                        return const Text('Offline');
-                      },
-                    ),
+
+              return BlocListener<TypingStatusCubit, TypingStatusState>(
+                listener: (context, state) {
+                  final typingUserId =
+                      state.typingStatusMap[widget.conversationId];
+                  typingUserId != null ? ' is typing...' : '';
+                  typing = typingUserId ?? '';
+                },
+                child: ListTile(
+                  leading: const CircleAvatar(
+                    backgroundColor: Colors.green,
                   ),
-                ],
+                  title: Text(widget.username),
+                  subtitle: BlocBuilder<OnlineStatusCubit, OnlineStatusState>(
+                    builder: (context, state) {
+                      // print(state);
+                      if (state is OnlineStatus) {
+                        List<String> stringList = state.onlineUsers
+                            .map((dynamicItem) => dynamicItem.toString())
+                            .toList();
+
+                        return BlocBuilder<TypingStatusCubit,
+                            TypingStatusState>(
+                          builder: (context, state) {
+                            final typingUserId =
+                                state.typingStatusMap[widget.conversationId];
+                            if (typingUserId != null) {
+                              return Text(
+                                'typing...',
+                                style: TextStyle(
+                                  color: Colors.grey.shade400,
+                                  fontSize: 12,
+                                ),
+                              );
+                            } else {
+                              return Text(
+                                stringList.contains((widget.users[0].id ==
+                                            NetworkServices.id
+                                        ? widget.users[1].id
+                                        : widget.users[0].id))
+                                    ? 'Online'
+                                    : 'Offline',
+                                style: TextStyle(
+                                  color: Colors.grey.shade400,
+                                  fontSize: 12,
+                                ),
+                              );
+                            }
+                          },
+                        );
+                      }
+                      return const Text('Unknown');
+                    },
+                  ),
+                ),
               );
+              // return Column(
+              //   crossAxisAlignment: CrossAxisAlignment.start,
+              //   children: [
+              //     Text(widget.username),
+              //     BlocBuilder<OnlineStatusCubit, OnlineStatusState>(
+              //       builder: (context, state) {
+              //         print(state);
+              //         if (state is OnlineStatus) {
+              //           return Text(
+              //             state.status == true ? 'Online' : 'Offline',
+              //             style: TextStyle(
+              //               color: Colors.grey.shade400,
+              //               fontSize: 12,
+              //             ),
+              //           );
+              //         }
+              //         return const Text('Unknown');
+              //       },
+              //     ),
+              //   ],
+              // );
             },
           ),
         ),
@@ -148,6 +199,16 @@ class _ChatRoomState extends ConsumerState<ChatRoom> {
                                 ),
                                 width: 10,
                                 child: TextField(
+                                  onChanged: (value) {
+                                    SocketService().sendTypingStatus({
+                                      "id": widget.users[0].id ==
+                                              NetworkServices.id
+                                          ? widget.users[1].id
+                                          : widget.users[0].id,
+                                      "sender": NetworkServices.id,
+                                      "conversationId": widget.conversationId
+                                    });
+                                  },
                                   cursorHeight: 16,
                                   style: const TextStyle(color: Colors.white),
                                   // colo
