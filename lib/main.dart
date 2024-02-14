@@ -24,6 +24,7 @@ final conversationsCubit = ConversationsCubit();
 final connectionCubit = SocketConnectionCubit();
 final onlineStatusCubit = OnlineStatusCubit();
 final typingStatusCubit = TypingStatusCubit();
+final themeCubit = ThemeCubit();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Supabase.initialize(
@@ -61,7 +62,7 @@ class MyApp extends ConsumerWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => ThemeCubit(),
+          create: (context) => themeCubit,
         ),
         BlocProvider(
           create: (context) => AuthenticationCubit(),
@@ -88,6 +89,7 @@ class MyApp extends ConsumerWidget {
       child: BlocBuilder<ThemeCubit, AppTheme>(
         builder: (context, theme) {
           return MaterialApp(
+            // themeMode: ThemeMode.system,
             debugShowCheckedModeBanner: false,
             title: 'Flutter Demo',
             theme: theme == AppTheme.light
@@ -107,9 +109,7 @@ class MyApp extends ConsumerWidget {
                 if (state is AuthenticationLoading) {
                   return const Scaffold(
                     body: Center(
-                      child: CircularProgressIndicator(
-                        color: Colors.green,
-                      ),
+                      child: CircularProgressIndicator(),
                     ),
                   );
                 } else if (state is RegisteredUser) {

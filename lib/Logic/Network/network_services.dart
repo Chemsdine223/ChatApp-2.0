@@ -88,7 +88,7 @@ class NetworkServices {
 
     // final SharedPreferences prefs = await SharedPreferences.getInstance();
 
-//    print(response.body);
+    // log(response.body);
 
     if (response.statusCode == 200) {
       // print(data['token']);
@@ -103,14 +103,16 @@ class NetworkServices {
 
       user = response.body;
 
-      final userModel = UserModel.fromJson(data);
+      final userModel = UserModel.fromJson(data['user']);
+
+      // log('userModel: $userModel');
       // StreamSocket().
       // connectAndListen();
-
       await saveTokens();
-      log('tokens saved and here they are $id $key');
+
+      // log('tokens saved and here they are $id $key');
       SocketService().initConnection();
-      log('initialized connection');
+      // log('initialized connection');
 
       return userModel;
     } else if (response.statusCode == 400) {
@@ -166,29 +168,10 @@ class NetworkServices {
     // log(response.body.toString());
     if (response.statusCode == 201) {
       final conversation = Conversation.fromJson(data['conversation']);
-      // log('-----------------------------');
-      // log(conversation.toString());
-      // log('-----------------------------');
-
-      // conversationsCubit.createConversation(conversation);
-      // if (context.mounted) {
-      //   Navigator.pop(context);
-      // }
-
       return conversation;
     } else if (response.statusCode == 404) {
-      // if (context.mounted) {
-      //   ScaffoldMessenger.of(context)
-      //       .showSnackBar(SnackBar(content: Text(data['message'])));
-      // }
       throw data['message'];
-      // throw '';
     } else {
-      // if (context.mounted) {
-      //   ScaffoldMessenger.of(context)
-      //       .showSnackBar(SnackBar(content: Text(data['message'])));
-      //   Navigator.pop(context);
-      // }
       throw data['message'];
     }
   }
@@ -223,8 +206,56 @@ class NetworkServices {
     }
   }
 
-  
-  
+  Future<String> editAvatar(XFile? avatar, String url) async {
+    final File avatarFile = File(avatar!.path);
+
+    // print('uploading...');
+    // // print(url);
+    // print('avatars/$url');
+
+    try {
+      // final List<FileObject> objects =
+      //     await supabase.storage.from('avatars').remove([
+      //   'avatars/image_picker_5128CA10-64FD-4A6D-89BC-9C1905B2ECB6-47843-000031ACA9D9AEAD.jpg'
+      // ]);
+
+      // print(objects);
+
+      final path = await supabase.storage.from('avatars').update(
+            'avatars/${avatar.name}',
+            avatarFile,
+            fileOptions: const FileOptions(cacheControl: '3600', upsert: false),
+          );
+
+      log(path);
+
+      // final imageUrlResponse = await supabase.storage
+      //     .from('avatars')
+      //     .createSignedUrl('avatars/${avatar.name}', 60 * 60 * 24 * 365 * 10);
+      // print('Successfully uploaded');
+
+      // print(imageUrlResponse);
+      return 'imageUrlResponse';
+      // await supabase.storage.from('avatars').remove([
+      //   'image_picker_C934624F-C857-4815-84F5-FB711AF33BC3-47843-0000161425348E84.jpg'
+      // ]
+      //     // avatarFile,
+      //     // fileOptions: const FileOptions(cacheControl: '3600', upsert: false),
+      //     );
+
+      // final imageUrlResponse = await supabase.storage
+      //     .from('avatars')
+      //     .createSignedUrl('avatars/${avatar.name}', 60 * 60 * 24 * 365 * 10);
+
+      // print(imageUrlResponse);
+      // print('Successfully deleted');
+      // return 'imageUrlResponse';
+    } on StorageException catch (e) {
+      log(e.toString());
+      throw e.statusCode == '409' ? 'Error updating' : e.message;
+    }
+  }
+
   Future<String> uploadAvatar(XFile? avatar) async {
     final File avatarFile = File(avatar!.path);
 

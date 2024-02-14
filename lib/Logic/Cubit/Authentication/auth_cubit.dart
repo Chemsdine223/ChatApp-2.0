@@ -16,7 +16,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
 
   Future getUser() async {
     emit(AuthenticationLoading());
-    await Future.delayed(const Duration(seconds: 3));
+    await Future.delayed(const Duration(seconds: 2));
 
     SharedPreferences preferences = await SharedPreferences.getInstance();
     final storedUser = preferences.getString('user');
@@ -30,6 +30,27 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
       final json = jsonDecode(storedUser);
       final model = UserModel.fromJson(json['user']);
       emit(RegisteredUser(model));
+    }
+  }
+
+  Future<void> editPhoto(String url, XFile? newAvatar) async {
+    emit(AuthenticationLoading());
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    final storedUser = preferences.getString('user');
+    final json = jsonDecode(storedUser!);
+    final model = UserModel.fromJson(json['user']);
+    print('before try');
+    try {
+      final newPhoto = await NetworkServices().editAvatar(newAvatar, url);
+      model.avatar = newPhoto;
+
+      preferences.setString('user', model.toString());
+
+      emit(RegisteredUser(model));
+
+      // model.avatar = newAvatar.
+    } catch (e) {
+      emit(AuthenticationError(e.toString()));
     }
   }
 
@@ -50,7 +71,6 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
         phone,
         avatarUrl,
       );
-
       emit(RegisteredUser(response));
     } catch (e) {
       emit(

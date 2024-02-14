@@ -34,7 +34,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         return BlocBuilder<ConversationsCubit, ConversationsState>(
           builder: (context, state) {
             return FloatingActionButton(
-              backgroundColor: Colors.black,
               child: const Icon(Icons.message),
               onPressed: () {
                 if (state is ConversationsLoaded) {
@@ -112,6 +111,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               child: Image.asset(
                 'images/settings.png',
                 height: 24,
+                // color: Colors.red
+                color: Theme.of(context).colorScheme.primary,
               ),
             ),
           ],
@@ -141,6 +142,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     final conversation = state.conversations[index];
                     // print(state.conversations[index].messages.last.content);
                     return ListTile(
+                      // tileColor: Theme.of(context).disabledColor,
                       trailing:
                           BlocBuilder<TypingStatusCubit, TypingStatusState>(
                         builder: (context, state) {
@@ -217,17 +219,21 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                         );
                         // print(state.conversations[index].id);
                       },
-                      title: Text(state.conversations[index].users[0].id ==
-                              NetworkServices.id
-                          ? state.conversations[index].users[1].username
-                          : state.conversations[index].users[0].username),
-                      tileColor: Colors.white,
+                      title: Text(
+                        state.conversations[index].users[0].id ==
+                                NetworkServices.id
+                            ? state.conversations[index].users[1].username
+                            : state.conversations[index].users[0].username,
+                        // style: Theme.of(context).textTheme.bodyLarge,
+                      ),
+                      // tileColor: Colors.white,
                       subtitle: Text(
                         state.conversations[index].messages.isNotEmpty
                             ? state.conversations[index].messages.last.content
                             : '',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.bodySmall,
                       ),
                     );
                   },

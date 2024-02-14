@@ -1,6 +1,7 @@
 import 'package:chat_app/Layouts/confirmation_form.dart';
 import 'package:chat_app/Layouts/registration_form.dart';
 import 'package:chat_app/Logic/Cubit/RegistrationFormCubit/registration_form_cubit.dart';
+import 'package:chat_app/Logic/Network/network_services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -24,11 +25,12 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () {
-      //     SocketService().initConnection();
-      //   },
-      // ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          NetworkServices()
+              .register('username', 'firstname', 'lastname', 'phone', 'avatar');
+        },
+      ),
       backgroundColor: Colors.grey.shade900,
       appBar: AppBar(
           backgroundColor: Colors.grey.shade900,

@@ -1,11 +1,12 @@
 import 'dart:convert';
+import 'dart:developer';
 
 class UserModel {
   final String id;
   final String username;
   final String firstname;
   final String lastname;
-  final String avatar;
+  String avatar;
 
   UserModel({
     required this.id,
@@ -16,6 +17,8 @@ class UserModel {
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
+    log('json: $json');
+    log('Username: ${json['username']}');
     return UserModel(
       id: json['_id'] ?? '',
       username: json['username'] ?? '',

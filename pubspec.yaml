@@ -50,6 +50,7 @@ dependencies:
   supabase_flutter: ^2.3.3
   file_picker: ^6.1.1
   image_picker: ^1.0.7
+  google_fonts: ^6.1.0
   # firebase_storage: ^11.6.0
   # firebase_core: ^2.24.2
 
