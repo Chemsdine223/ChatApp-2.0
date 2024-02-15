@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../Logic/Models/message.dart';
+import '../Models/message.dart';
 
 class ChatBubble extends StatelessWidget {
   final bool incoming;

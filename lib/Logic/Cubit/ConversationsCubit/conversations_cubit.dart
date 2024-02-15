@@ -5,10 +5,10 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
-import 'package:chat_app/Logic/Models/conversation.dart';
+import 'package:chat_app/Models/conversation.dart';
 import 'package:chat_app/Logic/Network/network_services.dart';
 
-import '../../Models/message.dart';
+import '../../../Models/message.dart';
 
 part 'conversations_state.dart';
 

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:chat_app/Layouts/confirmation_form.dart';
 import 'package:chat_app/Layouts/registration_form.dart';
 import 'package:chat_app/Logic/Cubit/RegistrationFormCubit/registration_form_cubit.dart';
@@ -31,47 +33,39 @@ class _LoginScreenState extends State<LoginScreen> {
               .register('username', 'firstname', 'lastname', 'phone', 'avatar');
         },
       ),
-      backgroundColor: Colors.grey.shade900,
+      // backgroundColor: Colors.grey.shade900,
       appBar: AppBar(
-          backgroundColor: Colors.grey.shade900,
-          centerTitle: true,
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                'ChatApp',
-                style: TextStyle(
-                    shadows: [
-                      BoxShadow(
-                        // blurRadius: .5,
-                        color: Colors.black38,
-                        offset: Offset(1, .5),
-                      )
-                    ],
-                    color: Colors.white,
-                    fontSize: 26,
-                    fontWeight: FontWeight.w700),
-              ),
-              const SizedBox(
-                width: 5,
-              ),
-              Image.asset(
-                'images/live-chat.png',
-                height: 36,
-              ),
-            ],
-          )),
+        // backgroundColor: Colors.grey.shade900,
+        centerTitle: true,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              'ChatApp',
+            ),
+            const SizedBox(
+              width: 5,
+            ),
+            Image.asset(
+              'images/live-chat.png',
+              height: 36,
+            ),
+          ],
+        ),
+      ),
 
       // backgroundColor: Colors.grey[900],
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: BlocBuilder<RegistrationFormCubit, RegistrationFormState>(
+        child: BlocBuilder<RegistrationFormCubit, FormData>(
           builder: (context, state) {
-            if (state is RegistrationFormStepTwo) {
+            log(state.step.toString());
+            if (state.step == 1) {
               return const ConfirmationLayout();
-            } else {
+            } else if (state.step == 0) {
               return const RegistrationForm();
             }
+            return Container();
           },
         ),
       ),

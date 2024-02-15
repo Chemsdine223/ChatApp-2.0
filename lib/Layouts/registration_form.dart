@@ -13,104 +13,232 @@ class RegistrationForm extends StatefulWidget {
 
 class _RegistrationFormState extends State<RegistrationForm> {
   final _formKey = GlobalKey<FormState>();
-  final _username = TextEditingController();
-  final _firstname = TextEditingController();
-  final _lastname = TextEditingController();
-  final _phone = TextEditingController();
+  String phoneError = '';
+  String usernameError = '';
+  String firstnmaeError = '';
+  String lastnameError = '';
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: Column(
-        // mainAxisAlignment: MainAxisAlignment. d,
+    // FormData formData = context.watch<RegistrationFormCubit>().state;
+    return BlocBuilder<RegistrationFormCubit, FormData>(
+      builder: (context, state) {
+        return Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              Text(state.firstname),
+              const SizedBox(
+                height: 140,
+              ),
+
+              // CustomTextField(
+              //   // errorText: 'Enter a phone number',
+              //   onChanged: (p0) {
+              //     setState(() {
+              //       state.firstname = p0;
+              //     });
+              //   },
+              //   validator: (value) {
+              //     if (value == null || value.isEmpty) {
+              //       return 'Enter a value';
+              //     }
+              //     return null;
+              //   },
+
+              //   // onChanged: (p0) {
+              //   //   state.firstname = p0;
+              //   // },
+              //   // validator: (p0) {
+              //   //   return null;
+              //   // },
+              // ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey.shade600),
+                  borderRadius: BorderRadius.circular(8),
+                  color: Colors.grey.shade300,
+                ),
+                child: TextFormField(
+                  initialValue: state.username,
+                  cursorColor: Colors.greenAccent,
+                  decoration: const InputDecoration(
+                    hintText: 'Enter your username',
+                    border: InputBorder.none,
+                  ),
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      setState(() {
+                        usernameError = 'Enter a username';
+                      });
+                    }
+                    return null;
+                  },
+                  onChanged: (value) {
+                    setState(() {
+                      usernameError = '';
+                      state.username = value;
+                    });
+                  },
+                ),
+              ),
+              usernameError.isNotEmpty
+                  ? _errorText(context, usernameError)
+                  : Container(),
+              const SizedBox(
+                height: 16,
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey.shade600),
+                  borderRadius: BorderRadius.circular(8),
+                  color: Colors.grey.shade300,
+                ),
+                child: TextFormField(
+                  initialValue: state.phone,
+                  cursorColor: Colors.greenAccent,
+                  decoration: const InputDecoration(
+                    hintText: 'Enter your phone',
+                    border: InputBorder.none,
+                  ),
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      setState(() {
+                        phoneError = 'Enter a phone number !';
+                      });
+                    }
+                    return null;
+                  },
+                  onChanged: (value) {
+                    setState(() {
+                      phoneError = '';
+                      state.phone = value;
+                    });
+                  },
+                ),
+              ),
+              phoneError.isNotEmpty
+                  ? _errorText(context, 'Enter your phone number')
+                  : Container(),
+              const SizedBox(
+                height: 16,
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey.shade600),
+                  borderRadius: BorderRadius.circular(8),
+                  color: Colors.grey.shade300,
+                ),
+                child: TextFormField(
+                  initialValue: state.firstname,
+                  cursorColor: Colors.greenAccent,
+                  decoration: const InputDecoration(
+                    hintText: 'Enter your firstname',
+                    border: InputBorder.none,
+                  ),
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      setState(() {
+                        firstnmaeError = 'Enter your firstname';
+                      });
+                    }
+                    return null;
+                  },
+                  onChanged: (value) {
+                    print(value);
+                    setState(() {
+                      firstnmaeError = '';
+                      state.firstname = value;
+                    });
+                    // print(state.)
+                  },
+                ),
+              ),
+              firstnmaeError.isNotEmpty
+                  ? _errorText(context, firstnmaeError)
+                  : Container(),
+              const SizedBox(
+                height: 16,
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey.shade600),
+                  borderRadius: BorderRadius.circular(8),
+                  color: Colors.grey.shade300,
+                ),
+                child: TextFormField(
+                  initialValue: state.lastname,
+                  cursorColor: Colors.greenAccent,
+                  decoration: const InputDecoration(
+                    hintText: 'Enter your lastname',
+                    border: InputBorder.none,
+                  ),
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      setState(() {
+                        lastnameError = 'Enter you lastname';
+                      });
+                    }
+                    return null;
+                  },
+                  onChanged: (value) {
+                    setState(() {
+                      lastnameError = '';
+                      state.lastname = value;
+                    });
+                  },
+                ),
+              ),
+              lastnameError.isNotEmpty
+                  ? _errorText(context, lastnameError)
+                  : Container(),
+              const SizedBox(
+                height: 16,
+              ),
+              CustomButton(
+                // color: Theme.of(context).colorScheme.onError,
+                label: 'Next',
+                onTap: () {
+                  print(state.firstname);
+                  if (_formKey.currentState!.validate() &&
+                      phoneError.isEmpty &&
+                      usernameError.isEmpty &&
+                      firstnmaeError.isEmpty &&
+                      lastnameError.isEmpty) {
+                    context.read<RegistrationFormCubit>().nextStep(
+                          state.firstname,
+                          state.lastname,
+                          state.phone,
+                          state.username,
+                        );
+                  }
+                },
+              )
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Padding _errorText(BuildContext context, String errorText) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 2.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          const SizedBox(
-            height: 140,
+          Text(
+            errorText,
+            textAlign: TextAlign.start,
+            style: Theme.of(context)
+                .textTheme
+                .bodySmall!
+                .copyWith(color: Theme.of(context).colorScheme.error),
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey.shade600),
-              borderRadius: BorderRadius.circular(8),
-              color: Colors.grey.shade300,
-            ),
-            child: TextFormField(
-              cursorColor: Colors.greenAccent,
-              decoration: const InputDecoration(
-                hintText: 'Enter your username',
-                border: InputBorder.none,
-              ),
-              controller: _username,
-            ),
-          ),
-          const SizedBox(
-            height: 16,
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey.shade600),
-              borderRadius: BorderRadius.circular(8),
-              color: Colors.grey.shade300,
-            ),
-            child: TextFormField(
-              cursorColor: Colors.greenAccent,
-              decoration: const InputDecoration(
-                hintText: 'Enter your phone',
-                border: InputBorder.none,
-              ),
-              controller: _phone,
-            ),
-          ),
-          const SizedBox(
-            height: 16,
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey.shade600),
-              borderRadius: BorderRadius.circular(8),
-              color: Colors.grey.shade300,
-            ),
-            child: TextFormField(
-              cursorColor: Colors.greenAccent,
-              decoration: const InputDecoration(
-                hintText: 'Enter your firstname',
-                border: InputBorder.none,
-              ),
-              controller: _firstname,
-            ),
-          ),
-          const SizedBox(
-            height: 16,
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey.shade600),
-              borderRadius: BorderRadius.circular(8),
-              color: Colors.grey.shade300,
-            ),
-            child: TextFormField(
-              cursorColor: Colors.greenAccent,
-              decoration: const InputDecoration(
-                hintText: 'Enter your lastname',
-                border: InputBorder.none,
-              ),
-              controller: _lastname,
-            ),
-          ),
-          const SizedBox(
-            height: 16,
-          ),
-          CustomButton(
-            label: 'Next',
-            onTap: () {
-              context.read<RegistrationFormCubit>().stepTwo(
-                  _firstname.text, _lastname.text, _phone.text, _username.text);
-            },
-          )
         ],
       ),
     );

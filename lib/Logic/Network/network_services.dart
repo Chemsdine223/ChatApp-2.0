@@ -5,8 +5,8 @@ import 'dart:io';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:chat_app/Logic/Models/conversation.dart';
-import 'package:chat_app/Logic/Models/user.dart';
+import 'package:chat_app/Models/conversation.dart';
+import 'package:chat_app/Models/user.dart';
 import 'package:http/http.dart' as http;
 import 'package:chat_app/Logic/Network/socket_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -210,7 +210,7 @@ class NetworkServices {
     final File avatarFile = File(avatar!.path);
 
     // print('uploading...');
-    // // print(url);
+    print(url);
     // print('avatars/$url');
 
     try {
@@ -222,7 +222,7 @@ class NetworkServices {
       // print(objects);
 
       final path = await supabase.storage.from('avatars').update(
-            'avatars/${avatar.name}',
+            'avatars/$url',
             avatarFile,
             fileOptions: const FileOptions(cacheControl: '3600', upsert: false),
           );

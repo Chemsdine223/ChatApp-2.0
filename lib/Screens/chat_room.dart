@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:chat_app/Logic/Models/user.dart';
+import 'package:chat_app/Models/user.dart';
 import 'package:chat_app/Logic/Network/socket_service.dart';
 
 import '../Logic/Cubit/ConversationsCubit/conversations_cubit.dart';
@@ -64,7 +64,12 @@ class _ChatRoomState extends ConsumerState<ChatRoom> {
                   typing = typingUserId ?? '';
                 },
                 child: ListTile(
-                  leading: const CircleAvatar(
+                  leading: CircleAvatar(
+                    backgroundImage: NetworkImage(
+                      widget.users[0].id == NetworkServices.id
+                          ? widget.users[1].avatar
+                          : widget.users[0].avatar,
+                    ),
                     backgroundColor: Colors.green,
                   ),
                   title: Text(widget.username),

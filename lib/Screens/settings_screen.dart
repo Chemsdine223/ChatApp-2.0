@@ -106,8 +106,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                                     source: ImageSource.gallery)
                                                 .then((value) {
                                               if (value != null) {
-                                                NetworkServices()
-                                                    .editAvatar(value, '');
+                                                NetworkServices().editAvatar(
+                                                    value, fileName);
                                               } else {
                                                 print('no image');
                                               }
@@ -188,6 +188,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               context
                                   .read<AuthenticationCubit>()
                                   .resetInCaseOfError();
+
+                              // context.read<RegistrationFormCubit>().stepOne();
+
                               // context
                               //     .read<AuthenticationCubit>()
                               //     .resetInCaseOfError();

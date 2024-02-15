@@ -162,6 +162,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                         child: Stack(
                           children: [
                             CircleAvatar(
+                              backgroundImage: NetworkImage(state
+                                          .conversations[index].users[0].id ==
+                                      NetworkServices.id
+                                  ? state.conversations[index].users[1].avatar
+                                  : state.conversations[index].users[0].avatar),
                               backgroundColor: Colors.grey.shade300,
                             ),
                             Align(

@@ -4,7 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:chat_app/Logic/Models/user.dart';
+import 'package:chat_app/Models/user.dart';
 import 'package:chat_app/Logic/Network/network_services.dart';
 
 part 'auth_cubit_state.dart';

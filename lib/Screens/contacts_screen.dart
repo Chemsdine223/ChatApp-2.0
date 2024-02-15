@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:chat_app/Logic/Cubit/ContactCubit/contact_cubit.dart';
-import 'package:chat_app/Logic/Models/conversation.dart';
+import 'package:chat_app/Models/conversation.dart';
 import 'package:chat_app/main.dart';
 
 class ContactScreen extends StatefulWidget {

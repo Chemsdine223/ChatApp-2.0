@@ -1,4 +1,4 @@
-import 'package:chat_app/Logic/Models/user.dart';
+import 'package:chat_app/Models/user.dart';
 
 import 'message.dart';
 

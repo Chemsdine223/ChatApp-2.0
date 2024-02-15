@@ -6,7 +6,7 @@ import 'package:chat_app/Logic/Network/socket_service.dart';
 import 'package:chat_app/main.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
-import '../Logic/Models/message.dart';
+import '../Models/message.dart';
 
 final providerOfSocket = StreamProvider((ref) async* {
   StreamController stream = StreamController();

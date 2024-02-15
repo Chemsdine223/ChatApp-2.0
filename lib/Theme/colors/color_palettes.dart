@@ -6,5 +6,4 @@ class ColorPalettes {
   final darksurfaceColor = Colors.grey.shade900;
   final lightsurfaceColor = Colors.grey.shade100;
   final accentColor = Colors.greenAccent;
-  // final lig
 }

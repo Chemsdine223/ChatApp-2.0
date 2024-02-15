@@ -102,7 +102,7 @@ class MyApp extends ConsumerWidget {
                       SnackBar(content: Text(state.errorMessage)));
 
                   context.read<AuthenticationCubit>().resetInCaseOfError();
-                  context.read<RegistrationFormCubit>().stepOne();
+                  // context.read<RegistrationFormCubit>().stepOne();
                 }
               },
               builder: (context, state) {
@@ -113,23 +113,10 @@ class MyApp extends ConsumerWidget {
                     ),
                   );
                 } else if (state is RegisteredUser) {
-                  // log('avatar: ${state.user.avatar}');
-                  // print();
-                  // print(state.user.username);
                   return const ChatScreen();
                 } else if (state is NewUser) {
                   return const LoginScreen();
-                }
-                // else if (state is AuthenticationError) {
-                // ScaffoldMessenger.of(context).showSnackBar(
-                //     SnackBar(content: Text(state.errorMessage)));
-                // return const Scaffold(
-                //   body: Center(
-                //     child: Text('Authentication Error'),
-                //   ),
-                // );
-                // }
-                else {
+                } else {
                   return const Scaffold(
                     body: Center(
                       child: CircularProgressIndicator(

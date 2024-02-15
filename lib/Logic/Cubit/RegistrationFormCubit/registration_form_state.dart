@@ -14,11 +14,42 @@ final class RegistrationFormStepTwo extends RegistrationFormState {
   final String lastname;
   final String phone;
   final String username;
-  
 
   const RegistrationFormStepTwo(
       this.firstname, this.lastname, this.phone, this.username);
 
   @override
   List<Object> get props => [firstname, lastname, phone, username];
+}
+
+class FormData {
+  String firstname = '';
+  String lastname = '';
+  String username = '';
+  String phone = '';
+  int step = 0;
+
+  FormData({
+    this.firstname = '',
+    this.lastname = '',
+    this.username = '',
+    this.phone = '',
+   this.step = 0
+  });
+
+  FormData copyWith({
+    String? firstname,
+    String? lastname,
+    String? username,
+    String? phone,
+    int? step,
+  }) {
+    return FormData(
+      firstname: firstname ?? this.firstname,
+      lastname: lastname ?? this.lastname,
+      username: username ?? this.username,
+      phone: phone ?? this.phone,
+      step: step ?? this.step,
+    );
+  }
 }
