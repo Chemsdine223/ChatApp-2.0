@@ -20,7 +20,6 @@ class _RegistrationFormState extends State<RegistrationForm> {
 
   @override
   Widget build(BuildContext context) {
-    // FormData formData = context.watch<RegistrationFormCubit>().state;
     return BlocBuilder<RegistrationFormCubit, FormData>(
       builder: (context, state) {
         return Form(
@@ -28,32 +27,9 @@ class _RegistrationFormState extends State<RegistrationForm> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                Text(state.firstname),
                 const SizedBox(
                   height: 140,
                 ),
-
-                // CustomTextField(
-                //   // errorText: 'Enter a phone number',
-                //   onChanged: (p0) {
-                //     setState(() {
-                //       state.firstname = p0;
-                //     });
-                //   },
-                //   validator: (value) {
-                //     if (value == null || value.isEmpty) {
-                //       return 'Enter a value';
-                //     }
-                //     return null;
-                //   },
-
-                //   // onChanged: (p0) {
-                //   //   state.firstname = p0;
-                //   // },
-                //   // validator: (p0) {
-                //   //   return null;
-                //   // },
-                // ),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   decoration: BoxDecoration(
@@ -149,7 +125,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
                       return null;
                     },
                     onChanged: (value) {
-                      print(value);
+                      // print(value);
                       setState(() {
                         firstnmaeError = '';
                         state.firstname = value;
@@ -204,7 +180,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
                   // color: Theme.of(context).colorScheme.onError,
                   label: 'Next',
                   onTap: () {
-                    print(state.firstname);
+                    // print(state.firstname);
                     if (_formKey.currentState!.validate() &&
                         phoneError.isEmpty &&
                         usernameError.isEmpty &&

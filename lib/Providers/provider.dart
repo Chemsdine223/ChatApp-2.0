@@ -1,74 +1,71 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:chat_app/Constants/constants.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:chat_app/Logic/Network/socket_service.dart';
-import 'package:chat_app/main.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
 import '../Models/message.dart';
 
-final providerOfSocket = StreamProvider((ref) async* {
-  StreamController stream = StreamController();
+late SocketProvider provider;
 
-  SocketService().socket.onerror((err) => log(err.toString()));
-  SocketService().socket.onDisconnect((_) => connectionCubit.disconnected());
-  SocketService().socket.onReconnect((data) => connectionCubit.connecting());
-  SocketService().socket.on('connected', (_) {
-    log(_.toString());
-    connectionCubit.reset();
-    conversationsCubit.getConversations();
+class SocketProvider {
+  final providerOfSocket = StreamProvider((ref) async* {
+    StreamController stream = StreamController();
+
+    socketService.socket.onerror((err) => log(err.toString()));
+    socketService.socket.onDisconnect((_) {
+      connectionCubit.disconnected();
+      logger.f('Bye ${ref.state}');
+    });
+
+    socketService.socket.on('connection', (_) {
+      log('connect ${_.toString()}');
+      connectionCubit.reset();
+      // print('A message here ');
+    });
+
+    socketService.socket.onConnect((data) {
+      logger.e('Connected from provider');
+      conversationsCubit.getConversations();
+      connectionCubit.reset();
+    });
+    socketService.socket.onReconnect((data) => connectionCubit.connecting());
+    socketService.socket.on('connected', (_) {
+      logger.e('from provider');
+      log(_.toString());
+      connectionCubit.reset();
+      conversationsCubit.getConversations();
+    });
+    socketService.socket.on('typing', (data) {
+      final conversationId = data['conversationId'];
+      typingStatusCubit.handleTypingStatus(conversationId, true);
+    });
+
+    socketService.socket.on('stoppedTyping', (data) {
+      final conversationId = data['conversationId'];
+      typingStatusCubit.handleTypingStatus(conversationId, false);
+    });
+
+    List<Message> messages = [];
+    socketService.socket.on('message', (data) {
+      final message = Message.fromJson(data['message']);
+      messages.add(message);
+      stream.add(messages);
+      conversationsCubit.processReceivedMessage(message);
+    });
+
+    socketService.socket.on('onlineUsers', (data) {
+      log('isOnline $data');
+      onlineStatusCubit.checkOnlineStatus(false, data['users']);
+    });
+    socketService.socket.onerror((_) {
+      log("Error IS ${_.toString()}");
+    });
+
+    await for (final value in stream.stream) {
+      log('stream value => $value');
+      yield value;
+    }
   });
-
-  // SocketService().socket.on('onlineUsers', (data) {
-  //   onlineStatusCubit.checkOnlineStatus(false, data['users']);
-  //   log('$data The man dem');
-  // });
-
-  // final Map<String, String> typingStatusMap = {};
-  SocketService().socket.on('typing', (data) {
-    final conversationId = data['conversationId'];
-    // typingStatusMap[conversationId] = conversationId;
-    typingStatusCubit.handleTypingStatus(conversationId, true);
-    // log(typingStatusMap.toString());
-    // TypingStatusCubit();
-  });
-
-  SocketService().socket.on('stoppedTyping', (data) {
-    final conversationId = data['conversationId'];
-    // typingStatusMap.remove(conversationId);
-    typingStatusCubit.handleTypingStatus(conversationId, false);
-    // typingStatusMap[conversationId] = conversationId;
-    // log(typingStatusMap.toString());
-    // TypingStatusCubit();
-  });
-
-  List<Message> messages = [];
-  SocketService().socket.on('message', (data) {
-    final message = Message.fromJson(data['message']);
-    messages.add(message);
-    stream.add(messages);
-    conversationsCubit.processReceivedMessage(message);
-  });
-
-  SocketService().socket.on('onlineUsers', (data) {
-    log('isOnline $data');
-    onlineStatusCubit.checkOnlineStatus(false, data['users']);
-  });
-
-  // SocketService().socket.on('onlineUsers', (data) {
-  //   log('isOnline $data');
-  //   onlineStatusCubit.checkOnlineStatus(false, data['users']);
-  // });
-
-  print('Messages List $messages');
-
-  SocketService().socket.onerror((_) {
-    log("Error IS ${_.toString()}");
-  });
-
-  await for (final value in stream.stream) {
-    log('stream value => $value');
-    yield value;
-  }
-});
+}

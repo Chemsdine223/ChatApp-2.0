@@ -11,13 +11,14 @@ import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../Constants/constants.dart';
-import '../../main.dart';
 // import '';
 
 // import 'package:chat_app/Logic/Network/socket_service.dart';
 
 class NetworkServices {
-  static const baseUrl = 'http://127.0.0.1:5000';
+  // static const baseUrl = 'http://127.0.0.1:5000';
+  static const baseUrl = 'http://172.20.10.5:5000';
+  // // static const baseUrl = 'http://192.168.100.30:5000';
   final loginUrl = '$baseUrl/api/login';
   final registerUrl = '$baseUrl/api/register';
   final getConvos = '$baseUrl/api/getConvos';
@@ -56,9 +57,6 @@ class NetworkServices {
 
       socketService.initConnection();
       final user = UserModel.fromJson(data);
-      // print();
-
-      // connectAndListen(data['token'], data['user']['_id']);
 
       return user;
     } else if (response.statusCode == 400) {
@@ -88,31 +86,17 @@ class NetworkServices {
     );
     final data = jsonDecode(response.body);
 
-    // final SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    // log(response.body);
-
     if (response.statusCode == 200) {
-      // print(data['token']);
-      // final access = await prefs.setString('token', data['token']);
-      // token = data['token'];
       id = data['user']['_id'];
-      // print('Data: $data');
-      // print('API KEY: ${data['key']}');
 
       key = data['key'];
-      // key = data['key'];
 
       user = response.body;
 
       final userModel = UserModel.fromJson(data['user']);
 
-      // log('userModel: $userModel');
-      // StreamSocket().
-      // connectAndListen();
       await saveTokens();
 
-      // log('tokens saved and here they are $id $key');
       socketService.initConnection();
       log('initialized connection');
 
@@ -175,7 +159,7 @@ class NetworkServices {
         contacts = await FlutterContacts.getContacts(withProperties: true);
       }
     } catch (e) {
-      print(e.toString());
+      // print(e.toString());
     }
     return contacts;
   }
@@ -221,9 +205,6 @@ class NetworkServices {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body)['conversations'] as List<dynamic>;
-
-      // print("This is the conversation response ${response.body}");
-
       final conversations =
           data.map((json) => Conversation.fromJson(json)).toList();
 
@@ -238,18 +219,9 @@ class NetworkServices {
   Future<String> editAvatar(XFile? avatar, String url) async {
     final File avatarFile = File(avatar!.path);
 
-    // print('uploading...');
-    print(url);
-    // print('avatars/$url');
+    // print(url);
 
     try {
-      // final List<FileObject> objects =
-      //     await supabase.storage.from('avatars').remove([
-      //   'avatars/image_picker_5128CA10-64FD-4A6D-89BC-9C1905B2ECB6-47843-000031ACA9D9AEAD.jpg'
-      // ]);
-
-      // print(objects);
-
       final path = await supabase.storage.from('avatars').update(
             'avatars/$url',
             avatarFile,
@@ -298,9 +270,9 @@ class NetworkServices {
       final imageUrlResponse = await supabase.storage
           .from('avatars')
           .createSignedUrl('avatars/${avatar.name}', 60 * 60 * 24 * 365 * 10);
-      print('Successfully uploaded');
+      log('Successfully uploaded');
 
-      print(imageUrlResponse);
+      logger.d(imageUrlResponse);
       return imageUrlResponse;
     } on StorageException catch (e) {
       throw e.statusCode == '409'
@@ -310,9 +282,6 @@ class NetworkServices {
   }
 
   Future<bool> deleteUser() async {
-    // await loadTokens();
-
-    // print(NetworkServices.key);
     final response = await http.post(
       Uri.parse(deleteAccount),
       headers: {
@@ -325,11 +294,7 @@ class NetworkServices {
     log(response.statusCode.toString());
 
     if (response.statusCode == 201) {
-      // clearStorage();
-      // NetworkServices.id = '';
-      // NetworkServices.key = '';
       await loadTokens();
-      // SocketService(id,key)().socket.dispose();
       log('User deleted');
 
       return true;

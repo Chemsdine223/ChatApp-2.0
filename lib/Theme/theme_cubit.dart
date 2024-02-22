@@ -18,7 +18,7 @@ class ThemeCubit extends Cubit<AppTheme> {
 
 
   void setTheme(bool themeSetter) async {
-    print('set');
+    // print('set');
     
     final prefs = await SharedPreferences.getInstance();
     prefs.setBool('theme', themeSetter);
@@ -27,7 +27,7 @@ class ThemeCubit extends Cubit<AppTheme> {
   void getTheme() async {
     final prefs = await SharedPreferences.getInstance();
     final theme = prefs.get('theme');
-    print('theme: $theme');
+    // print('theme: $theme');
     if (theme == true) {
       emit(AppTheme.dark);
     } else {

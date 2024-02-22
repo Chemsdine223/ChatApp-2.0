@@ -1,24 +1,19 @@
-import 'dart:developer';
-
 import 'package:chat_app/Logic/Cubit/OnlineStatusCubit/online_status_cubit.dart';
-import 'package:chat_app/main.dart';
+import 'package:chat_app/Providers/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:chat_app/Models/user.dart';
 
+import '../Constants/constants.dart';
 import '../Logic/Cubit/ConversationsCubit/conversations_cubit.dart';
 
 import '../Logic/Cubit/SocketCubits/socket_connection_cubit.dart';
 import '../Logic/Cubit/TypingStatusCubit/typing_status_cubit.dart';
 import '../Logic/Network/network_services.dart';
 import '../Widgets/chat_bubble.dart';
-
-// import '../Providers/provider.dart';
-
-// import '../Logic/Models/message.dart';
-
+ 
 class ChatRoom extends ConsumerStatefulWidget {
   final String conversationId;
   final String username;
@@ -40,11 +35,7 @@ class _ChatRoomState extends ConsumerState<ChatRoom> {
   @override
   Widget build(BuildContext context) {
     final message0 = TextEditingController();
-    // ref.watch(socketProvider);
-    final e = context.watch<ConversationsCubit>();
-    log(e.toString());
-
-    // ref.
+    ref.watch(provider.providerOfSocket);
 
     return Scaffold(
         appBar: AppBar(
@@ -210,14 +201,14 @@ class _ChatRoomState extends ConsumerState<ChatRoom> {
                                 width: 10,
                                 child: TextField(
                                   onChanged: (value) {
-                                    // socketService.sendTypingStatus({
-                                    //   "id": widget.users[0].id ==
-                                    //           NetworkServices.id
-                                    //       ? widget.users[1].id
-                                    //       : widget.users[0].id,
-                                    //   "sender": NetworkServices.id,
-                                    //   "conversationId": widget.conversationId
-                                    // });
+                                    socketService.sendTypingStatus({
+                                      "id": widget.users[0].id ==
+                                              NetworkServices.id
+                                          ? widget.users[1].id
+                                          : widget.users[0].id,
+                                      "sender": NetworkServices.id,
+                                      "conversationId": widget.conversationId
+                                    });
                                   },
                                   cursorHeight: 16,
                                   style: const TextStyle(color: Colors.white),

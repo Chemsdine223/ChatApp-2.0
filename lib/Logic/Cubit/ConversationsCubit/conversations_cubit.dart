@@ -14,18 +14,12 @@ part 'conversations_state.dart';
 class ConversationsCubit extends Cubit<ConversationsState> {
   ConversationsCubit() : super(ConversationsInitial()) {
     getConversations();
-  }
-
-  // reset() {
-  //   emit(ConversationsInitial());
-  // }
-
+  } 
   Future<void> getConversations() async {
     emit(ConversationsLoading());
     try {
       final response = await NetworkServices().getConversations();
       emit(ConversationsLoaded(conversations: response));
-      // print('State from cubit: $state');
     } catch (e) {
       emit(ConversationsError(errorMessage: e.toString()));
     }
@@ -44,7 +38,6 @@ class ConversationsCubit extends Cubit<ConversationsState> {
             .showSnackBar(SnackBar(content: Text(e.toString())));
       }
       emit(ConversationsLoaded(conversations: conversations));
-      // log('Hello');
     }
   }
 
@@ -53,7 +46,6 @@ class ConversationsCubit extends Cubit<ConversationsState> {
   }
 
   void processReceivedMessage(Message message) {
-    // print('used');
     if (state is ConversationsLoaded) {
       final sstate = state as ConversationsLoaded;
 

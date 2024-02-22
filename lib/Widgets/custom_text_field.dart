@@ -1,3 +1,4 @@
+import 'package:chat_app/Constants/constants.dart';
 import 'package:flutter/material.dart';
 
 class CustomTextField extends StatefulWidget {
@@ -48,7 +49,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
               // Call the parent's validator only if the error is empty
               if (error.isEmpty) {
                 final validationResult = widget.validator?.call(value);
-                print(validationResult);
+                logger.e(validationResult);
 
                 // Update the error based on the validation result
                 setState(() {
@@ -66,7 +67,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
             },
             // validator: widget.validator,
             onChanged: (value) {
-              print(error);
+              logger.e(error);
               // Call the onChanged function passed from the parent widget
               widget.onChanged?.call(value);
               setState(() {

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:chat_app/Logic/Cubit/RegistrationFormCubit/registration_form_cubit.dart';
 import 'package:chat_app/Widgets/info_tile.dart';
 import 'package:flutter/material.dart';
@@ -43,10 +45,10 @@ class _ConfirmationLayoutState extends ConsumerState<ConfirmationLayout> {
                       avatar = imagePicked;
                       imagePath = imagePicked.path;
                     });
-                    print(avatar!.path);
+                    log(avatar!.path);
                   } else {
                     // Handle the case where no image was picked.
-                    print('No image picked');
+                    log('No image picked');
                   }
                 },
                 child: SizedBox(

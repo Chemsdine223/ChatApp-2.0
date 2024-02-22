@@ -1,7 +1,9 @@
 import 'dart:developer';
 
+import 'package:chat_app/Constants/constants.dart';
 import 'package:chat_app/Logic/Cubit/OnlineStatusCubit/online_status_cubit.dart';
 import 'package:chat_app/Logic/Cubit/TypingStatusCubit/typing_status_cubit.dart';
+import 'package:chat_app/Providers/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,7 +16,6 @@ import 'package:chat_app/Screens/settings_screen.dart';
 import '../Logic/Cubit/ConversationsCubit/conversations_cubit.dart';
 import '../Logic/Cubit/SocketCubits/socket_connection_cubit.dart';
 
-// import '../Providers/provider.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {
   const ChatScreen({super.key});
@@ -26,7 +27,7 @@ class ChatScreen extends ConsumerStatefulWidget {
 class _ChatScreenState extends ConsumerState<ChatScreen> {
   @override
   Widget build(BuildContext context) {
-    context.watch<ConversationsCubit>();
+    ref.watch(provider.providerOfSocket);
 
     return Scaffold(
       floatingActionButton: Builder(builder: (context) {
@@ -110,7 +111,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       body: Center(
         child: BlocBuilder<ConversationsCubit, ConversationsState>(
           builder: (context, state) {
-            print(state);
+            logger.d(state);
             if (state is ConversationsLoading) {
               return const Center(
                 child: CircularProgressIndicator(),

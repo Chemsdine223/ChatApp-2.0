@@ -16,11 +16,5 @@ class ContactCubit extends Cubit<ContactState> {
     } catch (e) {
       emit(ContactError(errorMsg: e.toString()));
     }
-  }
-
-  // void test() {
-  //   if (state is ConversationsLoaded) {
-  //     log(conversationsCubit.state.toString());
-  //   }
-  // }
+  } 
 }

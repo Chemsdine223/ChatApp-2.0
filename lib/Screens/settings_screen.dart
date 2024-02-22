@@ -1,3 +1,4 @@
+import 'package:chat_app/Constants/constants.dart';
 import 'package:chat_app/Logic/Cubit/Authentication/auth_cubit.dart';
 import 'package:chat_app/Logic/Cubit/ConversationsCubit/conversations_cubit.dart';
 import 'package:chat_app/Logic/Cubit/DeleteUser/delete_user_cubit.dart';
@@ -34,11 +35,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     return BlocBuilder<AuthenticationCubit, AuthenticationState>(
       builder: (context, state) {
-        print(state);
+        logger.d(state);
         // log(state.toString());
         return BlocBuilder<DeleteUserCubit, DeleteUserState>(
           builder: (context, state) {
-            print(state);
+            logger.d(state);
             return Stack(
               children: [
                 Scaffold(
@@ -148,7 +149,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                                       onTap: () async {
                                                         String imageUrl =
                                                             state.user.avatar;
-                                                        print(imageUrl);
+                                                        logger.w(imageUrl);
                                                         Uri uri =
                                                             Uri.parse(imageUrl);
 
@@ -173,7 +174,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                                                     value,
                                                                     fileName);
                                                           } else {
-                                                            print('no image');
+                                                            logger
+                                                                .d('no image');
                                                           }
                                                         });
                                                       },
@@ -190,7 +192,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                             ),
                                             const SizedBox(height: 10),
                                             Text(
-                                              user.phone,
+                                              user.username,
                                               style: Theme.of(context)
                                                   .textTheme
                                                   .bodyLarge,
@@ -310,7 +312,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                                                     height: 16),
                                                                 CustomButton(
                                                                     onTap: () {
-                                                                      print(
+                                                                      logger.e(
                                                                           'tap');
                                                                       context
                                                                           .read<
@@ -482,7 +484,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           setState(() {
             phone = value;
             usernameError = '';
-            print(phone);
+            // print(phone);
           });
         },
       ),

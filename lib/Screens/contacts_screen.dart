@@ -3,7 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:chat_app/Logic/Cubit/ContactCubit/contact_cubit.dart';
 import 'package:chat_app/Models/conversation.dart';
-import 'package:chat_app/main.dart';
+
+import '../Constants/constants.dart';
 
 class ContactScreen extends StatefulWidget {
   final List<Conversation> conversations;
@@ -19,14 +20,7 @@ class ContactScreen extends StatefulWidget {
 class _ContactScreenState extends State<ContactScreen> {
   @override
   Widget build(BuildContext context) {
-    // final convoState = context.watch<ConversationsCubit>();
-    // log(convoState.state.toString());
     return Scaffold(
-        // floatingActionButton: FloatingActionButton(
-        //   // onPressed: () {
-        //   //   SocketService().checkStatus(widget);
-        //   // },
-        // ),
         appBar: AppBar(
           title: const Text('Contacts'),
         ),
