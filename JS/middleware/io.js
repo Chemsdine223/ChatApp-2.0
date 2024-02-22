@@ -16,6 +16,10 @@ function setupSocket(server) {
     const apiKey = socket.handshake.headers.key;
     const userId = socket.handshake.headers.id;
 
+    // console.log(apiKey);
+
+    console.log(`User id:${userId} User key: ${apiKey}`);
+
     if (!apiKey) {
       return next(new Error("Authentication failed. No key provided."));
     }
@@ -25,6 +29,7 @@ function setupSocket(server) {
       .populate("user", "_id")
       .then((apiKeyInfo) => {
         if (!apiKeyInfo || String(apiKeyInfo.user._id) !== userId) {
+          console.log(String(apiKeyInfo.user._id));
           return next(new Error("Authentication failed. User ID mismatch."));
         }
 
@@ -64,6 +69,12 @@ function setupSocket(server) {
       // });
       // console.log("emitted");
     });
+
+    //Previous user:
+    // User id:65d0022901332f9b70107b55 User key: 0eadc98ca00fb0d75b21473b4bce14ef
+    // Current user:
+    // 65cfff1330b29f8fb515c561 User key: a66cf155f866133f9ddfeec3b8a23043
+    // 65cfff1330b29f8fb515c561
 
     socket.on("typing", (data) => {
       const parsed = JSON.parse(data);

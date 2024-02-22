@@ -11,9 +11,9 @@ exports.register = async (req, res, next) => {
   console.log(req.body);
   const { username, phone, firstname, lastname, avatar } = req.body;
   const apiKey = crypto.randomBytes(16).toString("hex");
-  console.log({ apiKey });
+  // console.log({ apiKey });
 
-  console.log({avatar});
+  // console.log({avatar});
 
   try {
     const user = await User.create({
@@ -25,7 +25,7 @@ exports.register = async (req, res, next) => {
     });
 
     if (user) {
-      console.log(apiKey);
+      // console.log(apiKey);
 
       await Keys.create({
         user: user,

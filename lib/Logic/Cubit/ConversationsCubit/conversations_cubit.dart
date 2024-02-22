@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -16,6 +15,10 @@ class ConversationsCubit extends Cubit<ConversationsState> {
   ConversationsCubit() : super(ConversationsInitial()) {
     getConversations();
   }
+
+  // reset() {
+  //   emit(ConversationsInitial());
+  // }
 
   Future<void> getConversations() async {
     emit(ConversationsLoading());
@@ -34,15 +37,19 @@ class ConversationsCubit extends Cubit<ConversationsState> {
       final conversation = await NetworkServices().newChat(phone);
       conversations.add(conversation);
       emit(ConversationsLoaded(conversations: conversations));
-      log('Hi');
+      // log('Hi');
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text(e.toString())));
       }
       emit(ConversationsLoaded(conversations: conversations));
-      log('Hello');
+      // log('Hello');
     }
+  }
+
+  resetConvos() {
+    emit(ConversationsInitial());
   }
 
   void processReceivedMessage(Message message) {

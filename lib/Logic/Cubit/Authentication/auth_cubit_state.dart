@@ -13,8 +13,9 @@ final class AuthenticationLoading extends AuthenticationState {}
 
 final class NewUser extends AuthenticationState {}
 
-
 final class Disconnected extends AuthenticationState {}
+
+final class LoggedOut extends AuthenticationState {}
 
 final class RegisteredUser extends AuthenticationState {
   final UserModel user;

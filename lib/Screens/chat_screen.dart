@@ -13,7 +13,6 @@ import 'package:chat_app/Screens/settings_screen.dart';
 
 import '../Logic/Cubit/ConversationsCubit/conversations_cubit.dart';
 import '../Logic/Cubit/SocketCubits/socket_connection_cubit.dart';
-import '../Providers/provider.dart';
 
 // import '../Providers/provider.dart';
 
@@ -27,7 +26,7 @@ class ChatScreen extends ConsumerStatefulWidget {
 class _ChatScreenState extends ConsumerState<ChatScreen> {
   @override
   Widget build(BuildContext context) {
-    ref.watch(providerOfSocket);
+    context.watch<ConversationsCubit>();
 
     return Scaffold(
       floatingActionButton: Builder(builder: (context) {
@@ -45,16 +44,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     },
                   ));
                 }
-                // showModalBottomSheet(
-                //   context: context,
-                //   builder: (context) {
-                //     return Container(
-                //       color: Colors.red,
-                //       height: MediaQuery.of(context).size.height,
-                //       // child: ,
-                //     );
-                //   },
-                // );
               },
             );
           },
@@ -140,6 +129,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                   itemCount: state.conversations.length,
                   itemBuilder: (context, index) {
                     final conversation = state.conversations[index];
+                    final otherUser = state.conversations[index].users[0].id ==
+                            NetworkServices.id
+                        ? state.conversations[index].users[1]
+                        : state.conversations[index].users[0];
                     // print(state.conversations[index].messages.last.content);
                     return ListTile(
                       // tileColor: Theme.of(context).disabledColor,
@@ -162,12 +155,15 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                         child: Stack(
                           children: [
                             CircleAvatar(
-                              backgroundImage: NetworkImage(state
-                                          .conversations[index].users[0].id ==
-                                      NetworkServices.id
-                                  ? state.conversations[index].users[1].avatar
-                                  : state.conversations[index].users[0].avatar),
+                              backgroundImage: otherUser.avatar.isEmpty
+                                  ? null
+                                  : NetworkImage(
+                                      otherUser.avatar,
+                                    ),
                               backgroundColor: Colors.grey.shade300,
+                              child: otherUser.avatar.isEmpty
+                                  ? const Icon(Icons.person_2_rounded)
+                                  : null,
                             ),
                             Align(
                               alignment: Alignment.bottomRight,

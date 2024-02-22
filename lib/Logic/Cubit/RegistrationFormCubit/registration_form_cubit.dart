@@ -21,6 +21,16 @@ class RegistrationFormCubit extends Cubit<FormData> {
     ));
   }
 
+  resetForm() {
+    emit(state.copyWith(
+      firstname: '',
+      lastname: '',
+      username: '',
+      phone: '',
+      step: 0,
+    ));
+  }
+
   previousStep(
     String firstname,
     String lastname,

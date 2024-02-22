@@ -1,17 +1,18 @@
+import 'dart:developer';
+
 import 'package:chat_app/Logic/Cubit/OnlineStatusCubit/online_status_cubit.dart';
+import 'package:chat_app/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:chat_app/Models/user.dart';
-import 'package:chat_app/Logic/Network/socket_service.dart';
 
 import '../Logic/Cubit/ConversationsCubit/conversations_cubit.dart';
 
 import '../Logic/Cubit/SocketCubits/socket_connection_cubit.dart';
 import '../Logic/Cubit/TypingStatusCubit/typing_status_cubit.dart';
 import '../Logic/Network/network_services.dart';
-import '../Providers/provider.dart';
 import '../Widgets/chat_bubble.dart';
 
 // import '../Providers/provider.dart';
@@ -39,7 +40,11 @@ class _ChatRoomState extends ConsumerState<ChatRoom> {
   @override
   Widget build(BuildContext context) {
     final message0 = TextEditingController();
-    ref.watch(providerOfSocket);
+    // ref.watch(socketProvider);
+    final e = context.watch<ConversationsCubit>();
+    log(e.toString());
+
+    // ref.
 
     return Scaffold(
         appBar: AppBar(
@@ -64,12 +69,12 @@ class _ChatRoomState extends ConsumerState<ChatRoom> {
                   typing = typingUserId ?? '';
                 },
                 child: ListTile(
-                  leading: CircleAvatar(
-                    backgroundImage: NetworkImage(
-                      widget.users[0].id == NetworkServices.id
-                          ? widget.users[1].avatar
-                          : widget.users[0].avatar,
-                    ),
+                  leading: const CircleAvatar(
+                    // backgroundImage: NetworkImage(
+                    //   widget.users[0].id == NetworkServices.id
+                    //       ? widget.users[1].avatar
+                    //       : widget.users[0].avatar,
+                    // ),
                     backgroundColor: Colors.green,
                   ),
                   title: Text(widget.username),
@@ -205,14 +210,14 @@ class _ChatRoomState extends ConsumerState<ChatRoom> {
                                 width: 10,
                                 child: TextField(
                                   onChanged: (value) {
-                                    SocketService().sendTypingStatus({
-                                      "id": widget.users[0].id ==
-                                              NetworkServices.id
-                                          ? widget.users[1].id
-                                          : widget.users[0].id,
-                                      "sender": NetworkServices.id,
-                                      "conversationId": widget.conversationId
-                                    });
+                                    // socketService.sendTypingStatus({
+                                    //   "id": widget.users[0].id ==
+                                    //           NetworkServices.id
+                                    //       ? widget.users[1].id
+                                    //       : widget.users[0].id,
+                                    //   "sender": NetworkServices.id,
+                                    //   "conversationId": widget.conversationId
+                                    // });
                                   },
                                   cursorHeight: 16,
                                   style: const TextStyle(color: Colors.white),
@@ -230,8 +235,9 @@ class _ChatRoomState extends ConsumerState<ChatRoom> {
                             ),
                             InkWell(
                               onTap: () {
-                                print('object');
-                                SocketService().sendMessage(
+                                // print('object');
+
+                                socketService.sendMessage(
                                   {
                                     "content": message0.text,
                                     "sender": {

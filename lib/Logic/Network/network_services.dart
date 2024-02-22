@@ -8,10 +8,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:chat_app/Models/conversation.dart';
 import 'package:chat_app/Models/user.dart';
 import 'package:http/http.dart' as http;
-import 'package:chat_app/Logic/Network/socket_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../Constants/constants.dart';
+import '../../main.dart';
 // import '';
 
 // import 'package:chat_app/Logic/Network/socket_service.dart';
@@ -23,6 +23,8 @@ class NetworkServices {
   final getConvos = '$baseUrl/api/getConvos';
   final getBlogs = '$baseUrl/api/getBlogs';
   final createConvo = '$baseUrl/api/createConversation';
+  final deleteAccount = '$baseUrl/api/deleteAccount';
+  final editPhoneNumber = '$baseUrl/api/editPhone';
 
   static String token = '';
   static String id = '';
@@ -52,7 +54,7 @@ class NetworkServices {
 
       await saveTokens();
 
-      SocketService().initConnection();
+      socketService.initConnection();
       final user = UserModel.fromJson(data);
       // print();
 
@@ -71,7 +73,7 @@ class NetworkServices {
     String firstname,
     String lastname,
     String phone,
-    String avatar,
+    // String avatar,
   ) async {
     final response = await http.post(
       headers: {'Content-Type': 'application/json'},
@@ -81,7 +83,7 @@ class NetworkServices {
         "firstname": firstname,
         "lastname": lastname,
         "phone": phone,
-        "avatar": avatar,
+        // "avatar": avatar,
       }),
     );
     final data = jsonDecode(response.body);
@@ -111,14 +113,41 @@ class NetworkServices {
       await saveTokens();
 
       // log('tokens saved and here they are $id $key');
-      SocketService().initConnection();
-      // log('initialized connection');
+      socketService.initConnection();
+      log('initialized connection');
 
       return userModel;
     } else if (response.statusCode == 400) {
       throw data['message'];
     } else {
       // print(data);
+      throw data['message'];
+    }
+  }
+
+  Future<UserModel> editPhone(String phone) async {
+    await loadTokens();
+    final response = await http.put(
+      Uri.parse(editPhoneNumber),
+      headers: {
+        'Content-Type': 'application/json',
+        "Authorization": "Api-Key $key",
+      },
+      body: jsonEncode({
+        "phone": phone,
+      }),
+    );
+
+    log(response.body);
+
+    final data = jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      user = response.body;
+
+      final userModel = UserModel.fromJson(data['user']);
+      await saveTokens();
+      return userModel;
+    } else {
       throw data['message'];
     }
   }
@@ -277,6 +306,35 @@ class NetworkServices {
       throw e.statusCode == '409'
           ? 'You already uploaded this image'
           : e.message;
+    }
+  }
+
+  Future<bool> deleteUser() async {
+    // await loadTokens();
+
+    // print(NetworkServices.key);
+    final response = await http.post(
+      Uri.parse(deleteAccount),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Api-Key ${NetworkServices.key}'
+      },
+    );
+
+    log(response.body);
+    log(response.statusCode.toString());
+
+    if (response.statusCode == 201) {
+      // clearStorage();
+      // NetworkServices.id = '';
+      // NetworkServices.key = '';
+      await loadTokens();
+      // SocketService(id,key)().socket.dispose();
+      log('User deleted');
+
+      return true;
+    } else {
+      return false;
     }
   }
 }

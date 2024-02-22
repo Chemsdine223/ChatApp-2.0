@@ -1,27 +1,29 @@
 import 'dart:convert';
-import 'dart:developer';
 
 class UserModel {
   final String id;
   final String username;
   final String firstname;
   final String lastname;
+  final String phone;
   String avatar;
 
   UserModel({
     required this.id,
     required this.username,
+    required this.phone,
     required this.firstname,
     required this.lastname,
     required this.avatar,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
-    log('json: $json');
-    log('Username: ${json['username']}');
+    // log('json: $json');
+    // log('Username: ${json['username']}');
     return UserModel(
       id: json['_id'] ?? '',
       username: json['username'] ?? '',
+      phone: json['phone'] ?? '',
       firstname: json['firstname'] ?? '',
       lastname: json['lastname'] ?? '',
       avatar: json['avatar'] ?? '',
@@ -30,7 +32,7 @@ class UserModel {
 
   @override
   String toString() {
-    return 'UserModel(id: $id, username: $username, firstname: $firstname, lastname: $lastname)';
+    return 'UserModel(id: $id, username: $username, firstname: $firstname, lastname: $lastname, phone: $phone, avatar: $avatar)';
   }
 
   Map<String, dynamic> toMap() {
@@ -48,6 +50,7 @@ class UserModel {
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
       id: map['_id'] ?? '',
+      phone: map['phone'] ?? '',
       username: map['username'] ?? '',
       firstname: map['firstname'] ?? '',
       lastname: map['lastname'] ?? '',
