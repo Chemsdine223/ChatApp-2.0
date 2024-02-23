@@ -36,17 +36,12 @@ void main() async {
   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
   final String user = sharedPreferences.get('user').toString();
-  final String key = sharedPreferences.get('key').toString();
-  final String id = sharedPreferences.get('id').toString();
+
 
   await NetworkServices.loadTokens();
   provider = SocketProvider();
   if (user != 'null') {
     socketService.initConnection();
-    log('id: $id from main');
-    log('key: $key from main');
-    log('id: ${NetworkServices.id} from main');
-    log('key: ${NetworkServices.key} from main');
 
     log('object: User $user');
   }

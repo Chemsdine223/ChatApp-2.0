@@ -1,5 +1,6 @@
 import 'package:chat_app/Logic/Cubit/OnlineStatusCubit/online_status_cubit.dart';
 import 'package:chat_app/Providers/provider.dart';
+import 'package:chat_app/Screens/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,7 +14,7 @@ import '../Logic/Cubit/SocketCubits/socket_connection_cubit.dart';
 import '../Logic/Cubit/TypingStatusCubit/typing_status_cubit.dart';
 import '../Logic/Network/network_services.dart';
 import '../Widgets/chat_bubble.dart';
- 
+
 class ChatRoom extends ConsumerStatefulWidget {
   final String conversationId;
   final String username;
@@ -60,6 +61,17 @@ class _ChatRoomState extends ConsumerState<ChatRoom> {
                   typing = typingUserId ?? '';
                 },
                 child: ListTile(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => UserProfile(
+                            userModel: widget.users[0].id == NetworkServices.id
+                                ? widget.users[1]
+                                : widget.users[0],
+                          ),
+                        ));
+                  },
                   leading: const CircleAvatar(
                     // backgroundImage: NetworkImage(
                     //   widget.users[0].id == NetworkServices.id

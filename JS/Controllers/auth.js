@@ -30,6 +30,7 @@ exports.register = async (req, res, next) => {
       await Keys.create({
         user: user,
         key: apiKey,
+        message: "Created successfully",
       });
     }
 
@@ -38,9 +39,23 @@ exports.register = async (req, res, next) => {
       key: apiKey,
     });
   } catch (error) {
-    res.status(500).json({
-      error: error.message,
-    });
+    if (error.code === 11000) {
+      if (error.keyPattern.phone) {
+        res.status(404).json({
+          message: "Phone number already exists",
+          error: error,
+        });
+      } else if (error.keyPattern.username) {
+        res.status(404).json({
+          message: "Username already taken",
+          error: error,
+        });
+      }
+    } else {
+      res.status(500).json({
+        message: error.message,
+      });
+    }
   }
 };
 

@@ -114,6 +114,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     // XFile? avatar,
   ) async {
     emit(AuthenticationLoading());
+    await Future.delayed(const Duration(seconds: 5));
     try {
       // final String avatarUrl = await NetworkServices().uploadAvatar(avatar);
       final response = await NetworkServices().register(

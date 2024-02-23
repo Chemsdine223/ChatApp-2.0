@@ -19,24 +19,12 @@ class SocketProvider {
       logger.f('Bye ${ref.state}');
     });
 
-    socketService.socket.on('connection', (_) {
-      log('connect ${_.toString()}');
-      connectionCubit.reset();
-      // print('A message here ');
-    });
-
     socketService.socket.onConnect((data) {
       logger.e('Connected from provider');
       conversationsCubit.getConversations();
       connectionCubit.reset();
     });
     socketService.socket.onReconnect((data) => connectionCubit.connecting());
-    socketService.socket.on('connected', (_) {
-      logger.e('from provider');
-      log(_.toString());
-      connectionCubit.reset();
-      conversationsCubit.getConversations();
-    });
     socketService.socket.on('typing', (data) {
       final conversationId = data['conversationId'];
       typingStatusCubit.handleTypingStatus(conversationId, true);

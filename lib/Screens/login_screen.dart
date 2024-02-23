@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:chat_app/Layouts/confirmation_form.dart';
 import 'package:chat_app/Layouts/registration_form.dart';
+import 'package:chat_app/Logic/Cubit/Authentication/auth_cubit.dart';
 import 'package:chat_app/Logic/Cubit/RegistrationFormCubit/registration_form_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -40,39 +41,48 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     // final prov = ref.watch(streamRepositoryProvider);
     // print(prov);
 
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+    return BlocBuilder<AuthenticationCubit, AuthenticationState>(
+      builder: (context, state) {
+        return Stack(
           children: [
-            const Text(
-              'ChatApp',
+            Scaffold(
+              appBar: AppBar(
+                centerTitle: true,
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      'ChatApp',
+                    ),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    Image.asset(
+                      'images/live-chat.png',
+                      height: 36,
+                    ),
+                  ],
+                ),
+              ),
+              body: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: BlocBuilder<RegistrationFormCubit, FormData>(
+                  builder: (context, state) {
+                    log(state.step.toString());
+                    if (state.step == 1) {
+                      return const ConfirmationLayout();
+                    } else if (state.step == 0) {
+                      return const RegistrationForm();
+                    }
+                    return Container();
+                  },
+                ),
+              ),
             ),
-            const SizedBox(
-              width: 5,
-            ),
-            Image.asset(
-              'images/live-chat.png',
-              height: 36,
-            ),
+            state is AuthenticationLoading ? const Overlay() : Container(),
           ],
-        ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: BlocBuilder<RegistrationFormCubit, FormData>(
-          builder: (context, state) {
-            log(state.step.toString());
-            if (state.step == 1) {
-              return const ConfirmationLayout();
-            } else if (state.step == 0) {
-              return const RegistrationForm();
-            }
-            return Container();
-          },
-        ),
-      ),
+        );
+      },
     );
   }
 }
