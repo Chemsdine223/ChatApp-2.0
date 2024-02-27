@@ -1,16 +1,16 @@
 # chat_app
 
-A new Flutter project.
+This project is a feature-rich chat application built using Flutter for the front-end and Node.js for the back-end with a NoSQL mongoDB database. The app incorporates advanced functionality such as real-time messaging through Socket.IO, state management using Riverpod, and the Flutter Bloc package using cubit and Mongoose.
 
-## Getting Started
 
-This project is a starting point for a Flutter application.
+Key Features:
 
-A few resources to get you started if this is your first Flutter project:
+Real-time Messaging:
+Utilizes Socket.IO to enable seamless and real-time communication between users.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+State Management:
+Leverages the Riverpod package for efficient and scalable state management in the Flutter application to manage the streams.
+Integrates the Flutter Bloc package using cubit to manage the UI states, enhancing maintainability and scalability.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+This code base implements a modularized approach with reusable Flutter widgets for improved code organization which can be seen throughout the project structure.
+
