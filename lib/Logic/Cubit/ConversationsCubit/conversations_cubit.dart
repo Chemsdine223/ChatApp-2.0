@@ -14,8 +14,9 @@ part 'conversations_state.dart';
 class ConversationsCubit extends Cubit<ConversationsState> {
   ConversationsCubit() : super(ConversationsInitial()) {
     getConversations();
-  } 
+  }
   Future<void> getConversations() async {
+    print('getting conversations');
     emit(ConversationsLoading());
     try {
       final response = await NetworkServices().getConversations();

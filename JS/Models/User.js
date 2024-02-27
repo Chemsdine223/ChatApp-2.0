@@ -26,6 +26,10 @@ const userSchema = mongoose.Schema(
       type: String,
       required: false,
     },
+    deviceToken: {
+      type: String,
+      required: true,
+    },
   },
   {
     timestamps: true,

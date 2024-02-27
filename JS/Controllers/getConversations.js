@@ -32,15 +32,15 @@ exports.getConversations = async (req, res, next) => {
     // console.log(existingConversations);
     
     // console.log(if);
-    if (existingConversations) {
-      // console.log("sations from my cache");
-      const convos = JSON.parse(existingConversations);
+    // if (existingConversations) {
+    //   // console.log("sations from my cache");
+    //   const convos = JSON.parse(existingConversations);
 
-      res.status(200).json({conversations: convos});
-      return;
+    //   res.status(200).json({conversations: convos});
+    //   return;
 
       
-    }
+    // }
 
     const conversations = await ChatRoom.find({
       users: { $elemMatch: { _id: userIdString } },

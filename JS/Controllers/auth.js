@@ -9,7 +9,7 @@ const crypto = require("crypto");
 
 exports.register = async (req, res, next) => {
   console.log(req.body);
-  const { username, phone, firstname, lastname, avatar } = req.body;
+  const { username, phone, firstname, lastname, avatar, token } = req.body;
   const apiKey = crypto.randomBytes(16).toString("hex");
   // console.log({ apiKey });
 
@@ -22,6 +22,7 @@ exports.register = async (req, res, next) => {
       firstname,
       lastname,
       avatar,
+      deviceToken:token
     });
 
     if (user) {

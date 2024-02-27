@@ -3,17 +3,34 @@ const http = require("http");
 const cors = require("cors");
 const setupSocket = require("./middleware/io"); // Change the path accordingly
 const redis = require("./Controllers/redisController");
+// const x = 
 const app = express();
 require("dotenv").config();
 
-app.use(cors());
+var admin = require("firebase-admin");
+
+
+
+
+
+
+const { initializeApp, applicationDefault } = require("firebase-admin/app");
+
+
 app.use(express.json());
 const server = http.createServer(app);
 // http://localhost:5000/
 
+process.env.GOOGLE_APPLICATION_CREDENTIALS
 
+var serviceAccount = require("./pushnotifications-d9a92-firebase-adminsdk-stspy-61edb0b08f.json");
 
-var whitelist = ['http://localhost:5000']; //white list consumers
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  projectId: "pushnotifications-d9a92", 
+});
+
+var whitelist = ["http://localhost:5000"]; //white list consumers
 var corsOptions = {
   origin: function (origin, callback) {
     if (whitelist.indexOf(origin) !== -1) {
@@ -37,8 +54,6 @@ var corsOptions = {
 };
 
 app.use(cors(corsOptions));
-
-
 
 app.use("/api/", require("./router/routes"));
 

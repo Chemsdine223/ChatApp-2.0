@@ -1,17 +1,20 @@
 import 'dart:developer';
 
-import 'package:chat_app/Logic/Cubit/OnlineStatusCubit/online_status_cubit.dart';
-import 'package:chat_app/Logic/Cubit/TypingStatusCubit/typing_status_cubit.dart';
-import 'package:chat_app/Providers/provider.dart';
+import 'package:chat_app/Constants/constants.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
+import 'package:chat_app/Logic/Cubit/OnlineStatusCubit/online_status_cubit.dart';
 import 'package:chat_app/Logic/Network/network_services.dart';
+import 'package:chat_app/Models/conversation.dart';
+import 'package:chat_app/Providers/provider.dart';
 import 'package:chat_app/Screens/chat_room.dart';
 import 'package:chat_app/Screens/contacts_screen.dart';
 import 'package:chat_app/Screens/settings_screen.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Logic/Cubit/ConversationsCubit/conversations_cubit.dart';
 import '../Logic/Cubit/SocketCubits/socket_connection_cubit.dart';
@@ -168,19 +171,21 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                           ],
                         ),
                         child: ListTile(
+                          trailing: CountText(conversation: conversation),
+
                           // tileColor: Theme.of(context).disabledColor,
-                          trailing:
-                              BlocBuilder<TypingStatusCubit, TypingStatusState>(
-                            builder: (context, state) {
-                              // if (state is Typing) {
-                              final typingUserId =
-                                  state.typingStatusMap[conversation.id];
-                              return Text(
-                                  typingUserId != null ? ' is typing...' : '');
-                              // }
-                              // return const Text('');
-                            },
-                          ),
+                          // trailing:
+                          //     BlocBuilder<TypingStatusCubit, TypingStatusState>(
+                          //   builder: (context, state) {
+                          //     // if (state is Typing) {
+                          //     final typingUserId =
+                          //         state.typingStatusMap[conversation.id];
+                          //     return Text(
+                          //         typingUserId != null ? ' is typing...' : '');
+                          //     // }
+                          //     // return const Text('');
+                          //   },
+                          // ),
                           leading: SizedBox(
                             height: 40,
                             width: 40,
@@ -287,5 +292,73 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         ),
       ),
     );
+  }
+}
+
+class CountText extends StatefulWidget {
+  final Conversation conversation;
+  const CountText({
+    Key? key,
+    required this.conversation,
+  }) : super(key: key);
+
+  @override
+  State<CountText> createState() => _CountTextState();
+}
+
+class _CountTextState extends State<CountText> {
+  Future<String> getConversationCount(String id) async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+
+    String count = preferences.getString(id) ?? '';
+
+    return count;
+  }
+
+  Future<void> setCount(String id, String count) async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+
+    preferences.setString(id, count);
+
+    // return count;
+  }
+
+  @override
+  void initState() {
+    getConversationCount(widget.conversation.id).then((value) {
+      if (value != '') {
+        logger.f('initial count $count');
+        setState(() {
+          count = int.parse(value);
+        });
+      }
+    });
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      if (message.notification != null) {
+        print(
+            'Message also contained a notification: ${message.notification!.title!}');
+        logger.e('conversation id is: ${widget.conversation.id} ');
+
+        logger.e(message.data);
+        if (message.data['conversationId'] == widget.conversation.id) {
+          logger.f('count is: $count');
+          setState(() {
+            count++;
+          });
+          setCount(widget.conversation.id, count.toString());
+        }
+      }
+
+      // setState(() {
+      //   count++;
+      // });
+    });
+    super.initState();
+  }
+
+  int count = 0;
+  @override
+  Widget build(BuildContext context) {
+    return Text(count.toString());
   }
 }

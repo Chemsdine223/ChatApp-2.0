@@ -4,6 +4,7 @@ const Message = require("../Models/Message");
 const ChatRoom = require("../Models/ChatRoom");
 const User = require("../Models/user"); // Assuming your user model is defined in User.js
 const Keys = require("../Models/Keys");
+const { sendMessageNotification } = require("../Controllers/sendNotification");
 
 const activeUsers = new Set();
 
@@ -130,6 +131,7 @@ function setupSocket(server) {
       }).select("-password");
 
       console.log({ receiverData });
+      console.log({ senderData });
 
       try {
         if (!receiverData) {
@@ -170,6 +172,11 @@ function setupSocket(server) {
 
         chatRoom.messages.push(message);
         await chatRoom.save();
+        sendMessageNotification(
+          senderData.username,
+          message.content,
+          receiverData.deviceToken
+        );
 
         io.to(data.receiver.id).emit("message", {
           conversationId: chatRoom._id,

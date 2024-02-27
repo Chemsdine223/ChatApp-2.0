@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -16,9 +17,10 @@ import '../../Constants/constants.dart';
 // import 'package:chat_app/Logic/Network/socket_service.dart';
 
 class NetworkServices {
-  static const baseUrl = 'http://127.0.0.1:5000';
-  // static const baseUrl = 'http://172.20.10.5:5000';
+  // static const baseUrl = 'http://127.0.0.1:5000';
+  static const baseUrl = 'http://172.20.10.5:5000';
   // static const baseUrl = 'http://192.168.100.30:5000';
+  // static const baseUrl = 'http://192.168.0.112:5000';
   final loginUrl = '$baseUrl/api/login';
   final registerUrl = '$baseUrl/api/register';
   final getConvos = '$baseUrl/api/getConvos';
@@ -73,6 +75,7 @@ class NetworkServices {
     String phone,
     // String avatar,
   ) async {
+    final fcmToken = await FirebaseMessaging.instance.getToken();
     final response = await http.post(
       headers: {'Content-Type': 'application/json'},
       Uri.parse(registerUrl),
@@ -81,7 +84,7 @@ class NetworkServices {
         "firstname": firstname,
         "lastname": lastname,
         "phone": phone,
-        // "avatar": avatar,
+        "token": fcmToken,
       }),
     );
     final data = jsonDecode(response.body);
@@ -195,6 +198,7 @@ class NetworkServices {
 
     await loadTokens();
     // print('Key: $apiKey');
+
     final response = await http.get(
       Uri.parse(getConvos),
       headers: {
@@ -208,7 +212,8 @@ class NetworkServices {
       final conversations =
           data.map((json) => Conversation.fromJson(json)).toList();
 
-      // print(conversations);
+      // logger.f(conversations);
+      // response.body;
 
       return conversations;
     } else {
@@ -294,6 +299,7 @@ class NetworkServices {
     log(response.statusCode.toString());
 
     if (response.statusCode == 201) {
+      await FirebaseMessaging.instance.deleteToken();
       await loadTokens();
       log('User deleted');
 

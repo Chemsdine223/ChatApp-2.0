@@ -1,7 +1,8 @@
 import 'dart:developer';
 
 // import 'package:chat_app/Providers/observers.dart';
-import 'package:chat_app/Utilities/utils.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,31 +21,58 @@ import 'Providers/provider.dart';
 import 'Screens/chat_screen.dart';
 import 'Screens/login_screen.dart';
 import 'Theme/theme_data.dart';
+import 'firebase_options.dart';
 
+String token = '';
 void main() async {
-  // Hive
+
   WidgetsFlutterBinding.ensureInitialized();
-  PreferenceUtils.init();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   await Supabase.initialize(
     url: 'https://qrxbuwdzlubqpatmpjew.supabase.co',
     anonKey:
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFyeGJ1d2R6bHVicXBhdG1wamV3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDc3NDY1MjUsImV4cCI6MjAyMzMyMjUyNX0.nzDWnr2uKG4Oprl3zv1yhqLrh_BA3TrisNP2Kc1Xqv8',
   );
 
-  socketService.socket.dispose();
+  requestPermission();
+
+
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    print('Got a message whilst in the foreground!');
+    print('Message data: ${message.data}');
+
+    if (message.notification != null) {
+      print(
+          'Message also contained a notification: ${message.notification!.title!}');
+    }
+  });
 
   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-  // sharedPreferences.clear();
   final String user = sharedPreferences.get('user').toString();
-
   await NetworkServices.loadTokens();
   provider = SocketProvider();
+  socketService.socket.dispose();
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+
   if (user != 'null') {
     socketService.initConnection();
 
     log('object: User $user');
   }
   runApp(const ProviderScope(child: MyApp()));
+}
+
+// ! Set the messages initialization in flutter to init state
+// ! Change the consumer to stateful consumer
+
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async { 
+  await Firebase.initializeApp();
+
+  print("Handling a background message: ${message.messageId}");
 }
 
 class MyApp extends ConsumerWidget {
