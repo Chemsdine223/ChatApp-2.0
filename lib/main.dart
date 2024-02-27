@@ -34,9 +34,8 @@ void main() async {
   socketService.socket.dispose();
 
   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-
+  // sharedPreferences.clear();
   final String user = sharedPreferences.get('user').toString();
-
 
   await NetworkServices.loadTokens();
   provider = SocketProvider();

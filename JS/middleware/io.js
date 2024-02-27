@@ -77,6 +77,7 @@ function setupSocket(server) {
     // 65cfff1330b29f8fb515c561
 
     socket.on("typing", (data) => {
+      console.log(data);
       const parsed = JSON.parse(data);
       console.log(parsed.id);
       io.to(parsed.id).emit("typing", {
@@ -195,6 +196,8 @@ function setupSocket(server) {
           conversationId: chatRoom._id,
           message,
         });
+
+        
 
         io.to(socket.id).emit("message", {
           conversationId: chatRoom._id,

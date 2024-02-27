@@ -1,3 +1,4 @@
+import 'package:chat_bubbles/bubbles/bubble_special_three.dart';
 import 'package:flutter/material.dart';
 
 import '../Models/message.dart';
@@ -14,29 +15,14 @@ class ChatBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      // alignment: Alignment.bottomLeft,
-      // constraints: const BoxConstraints(minWidth: 10, maxWidth: 10),
-      padding: const EdgeInsets.symmetric(
-        horizontal: 4,
-        vertical: 4,
-      ),
-      margin: const EdgeInsets.only(bottom: 10),
-      width: message.content.length <= 7 ? 70 : null,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        color:
-            incoming == true ? Colors.blue.shade700 : Colors.greenAccent[400],
-      ),
-      child: Center(
-        child: Text(
-          message.content,
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w400,
-          ),
-        ),
-      ),
+    return BubbleSpecialThree(
+      textStyle:
+          Theme.of(context).textTheme.bodySmall!.copyWith(color: Colors.white),
+      text: message.content,
+      color: incoming ? Colors.green : Colors.blue,
+      tail: false,
+      isSender: incoming == true ? false : true,
+      // seen: true,
     );
   }
 }

@@ -55,6 +55,7 @@ dependencies:
   hive_flutter: ^1.1.0
   logger: ^2.0.2+1
   flutter_slidable: ^3.0.1
+  chat_bubbles: ^1.6.0
   # firebase_storage: ^11.6.0
   # firebase_core: ^2.24.2
 

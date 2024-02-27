@@ -14,6 +14,9 @@ class SocketProvider {
     StreamController stream = StreamController();
 
     socketService.socket.onerror((err) => log(err.toString()));
+    socketService.socket.onConnectTimeout((data) {
+      connectionCubit.disconnected();
+    });
     socketService.socket.onDisconnect((_) {
       connectionCubit.disconnected();
       logger.f('Bye ${ref.state}');
@@ -21,9 +24,10 @@ class SocketProvider {
 
     socketService.socket.onConnect((data) {
       logger.e('Connected from provider');
-      conversationsCubit.getConversations();
       connectionCubit.reset();
+      conversationsCubit.getConversations();
     });
+
     socketService.socket.onReconnect((data) => connectionCubit.connecting());
     socketService.socket.on('typing', (data) {
       final conversationId = data['conversationId'];
