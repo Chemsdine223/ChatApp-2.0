@@ -1,6 +1,6 @@
 # chat_app
 
-This project is a feature-rich chat application built using Flutter for the front-end and Node.js for the back-end. The app incorporates advanced functionality such as real-time messaging through Socket.IO, state management using Riverpod, and the Flutter Bloc package using cubit.
+This project is a feature-rich chat application built using Flutter for the front-end and Node.js for the back-end with a NoSQL mongoDB database. The app incorporates advanced functionality such as real-time messaging through Socket.IO, state management using Riverpod, and the Flutter Bloc package using cubit and Mongoose.
 
 
 Key Features:
