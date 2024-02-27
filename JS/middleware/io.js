@@ -197,8 +197,6 @@ function setupSocket(server) {
           message,
         });
 
-        
-
         io.to(socket.id).emit("message", {
           conversationId: chatRoom._id,
           message,
