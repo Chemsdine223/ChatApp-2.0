@@ -1,16 +1,7 @@
 # chat_app
+ 
+This project presents a chat application, seamlessly blending Flutter for the front-end and Node.js for the back-end, accompanied by a robust NoSQL MongoDB database. Noteworthy features include advanced capabilities like real-time messaging facilitated by Socket.IO, efficient state management utilizing Riverpod, and the integration of the Flutter Bloc package with Cubit. Mongoose and Firebase Cloud Messaging are employed to handle database operations and notifications, respectively.
 
-This project is a feature-rich chat application built using Flutter for the front-end and Node.js for the back-end with a NoSQL mongoDB database. The app incorporates advanced functionality such as real-time messaging through Socket.IO, state management using Riverpod, and the Flutter Bloc package using cubit and Mongoose.
-
-
-Key Features:
-
-Real-time Messaging:
-Utilizes Socket.IO to enable seamless and real-time communication between users.
-
-State Management:
-Leverages the Riverpod package for efficient and scalable state management in the Flutter application to manage the streams.
-Integrates the Flutter Bloc package using cubit to manage the UI states, enhancing maintainability and scalability.
 
 This code base implements a modularized approach with reusable Flutter widgets for improved code organization which can be seen throughout the project structure.
 
