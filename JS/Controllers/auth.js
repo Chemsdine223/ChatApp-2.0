@@ -31,13 +31,17 @@ exports.register = async (req, res, next) => {
       await Keys.create({
         user: user,
         key: apiKey,
-        message: "Created successfully",
+        
       });
+
+      // await user.save()
     }
+
 
     res.status(200).json({
       user: user,
       key: apiKey,
+      message: "Created successfully",
     });
   } catch (error) {
     if (error.code === 11000) {
@@ -56,6 +60,8 @@ exports.register = async (req, res, next) => {
       res.status(500).json({
         message: error.message,
       });
+
+      console.log(error);
     }
   }
 };

@@ -1,14 +1,15 @@
 import 'package:bloc/bloc.dart';
-import 'package:equatable/equatable.dart';
+import 'package:chat_app/Constants/constants.dart';
 
-import '../../../Models/conversation.dart';
+class CounterCubit extends Cubit<int> {
+  CounterCubit() : super(0);
 
-part 'counter_state.dart';
+  addNotification() {
+    emit(state + 1);
+    logger.f('Added: $state');
+  }
 
-class CounterCubit extends Cubit<CounterState> {
-  CounterCubit() : super(CounterInitial());
-
-  addNotification(List<Conversation> conversations, int count ){
-    
+  reset() {
+    emit(0);
   }
 }

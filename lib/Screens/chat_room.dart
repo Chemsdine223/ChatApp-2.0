@@ -1,26 +1,27 @@
-import 'package:chat_app/Logic/Cubit/OnlineStatusCubit/online_status_cubit.dart';
-import 'package:chat_app/Providers/provider.dart';
-import 'package:chat_app/Screens/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:chat_app/Logic/Cubit/OnlineStatusCubit/online_status_cubit.dart';
 import 'package:chat_app/Models/user.dart';
+import 'package:chat_app/Providers/provider.dart';
+import 'package:chat_app/Screens/user_profile.dart';
 
 import '../Constants/constants.dart';
 import '../Logic/Cubit/ConversationsCubit/conversations_cubit.dart';
-
 import '../Logic/Cubit/SocketCubits/socket_connection_cubit.dart';
 import '../Logic/Cubit/TypingStatusCubit/typing_status_cubit.dart';
 import '../Logic/Network/network_services.dart';
 import '../Widgets/chat_bubble.dart';
 
 class ChatRoom extends ConsumerStatefulWidget {
+  // final dynamic countTextState;
   final String conversationId;
   final String username;
   final List<UserModel> users;
   const ChatRoom({
     Key? key,
+    // required this.countTextState,
     required this.conversationId,
     required this.username,
     required this.users,
@@ -33,6 +34,7 @@ class ChatRoom extends ConsumerStatefulWidget {
 class _ChatRoomState extends ConsumerState<ChatRoom> {
   String typing = '';
 
+ 
   @override
   Widget build(BuildContext context) {
     final message0 = TextEditingController();

@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 // import 'package:chat_app/Providers/observers.dart';
+import 'package:chat_app/Logic/Cubit/CounterCubit/counter_cubit.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +26,6 @@ import 'firebase_options.dart';
 
 String token = '';
 void main() async {
-
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -38,6 +38,8 @@ void main() async {
 
   requestPermission();
 
+  final t = await FirebaseMessaging.instance.getToken();
+  logger.e(t);
 
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
     print('Got a message whilst in the foreground!');
@@ -50,12 +52,13 @@ void main() async {
   });
 
   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+  // sharedPreferences.clear();
   final String user = sharedPreferences.get('user').toString();
+
   await NetworkServices.loadTokens();
   provider = SocketProvider();
   socketService.socket.dispose();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
 
   if (user != 'null') {
     socketService.initConnection();
@@ -69,7 +72,7 @@ void main() async {
 // ! Change the consumer to stateful consumer
 
 @pragma('vm:entry-point')
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async { 
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
 
   print("Handling a background message: ${message.messageId}");
@@ -86,6 +89,9 @@ class MyApp extends ConsumerWidget {
       providers: [
         BlocProvider(
           create: (context) => themeCubit,
+        ),
+        BlocProvider(
+          create: (context) => CounterCubit(),
         ),
         BlocProvider(
           create: (context) => AuthenticationCubit(),

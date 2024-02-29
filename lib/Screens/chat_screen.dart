@@ -1,12 +1,14 @@
 import 'dart:developer';
 
-import 'package:chat_app/Constants/constants.dart';
+import 'package:chat_app/Logic/Cubit/CounterCubit/counter_cubit.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:chat_app/Constants/constants.dart';
 import 'package:chat_app/Logic/Cubit/OnlineStatusCubit/online_status_cubit.dart';
 import 'package:chat_app/Logic/Network/network_services.dart';
 import 'package:chat_app/Models/conversation.dart';
@@ -14,7 +16,6 @@ import 'package:chat_app/Providers/provider.dart';
 import 'package:chat_app/Screens/chat_room.dart';
 import 'package:chat_app/Screens/contacts_screen.dart';
 import 'package:chat_app/Screens/settings_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Logic/Cubit/ConversationsCubit/conversations_cubit.dart';
 import '../Logic/Cubit/SocketCubits/socket_connection_cubit.dart';
@@ -27,6 +28,14 @@ class ChatScreen extends ConsumerStatefulWidget {
 }
 
 class _ChatScreenState extends ConsumerState<ChatScreen> {
+  // @override
+  // void dispose() {
+  //   logger.d('Disposed');
+  //   super.dispose();
+  // }
+
+  // _CountTextState? countTextState;
+  // void resetCounter() {}
   @override
   Widget build(BuildContext context) {
     ref.watch(provider.providerOfSocket);
@@ -171,7 +180,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                           ],
                         ),
                         child: ListTile(
-                          trailing: CountText(conversation: conversation),
+                          trailing: CountText(
+                            conversation: conversation,
+                            // onResetCount: (childState) {
+                            //   // Receive the child widget state
+                            //   // countTextState = childState;
+                            // },
+                          ),
 
                           // tileColor: Theme.of(context).disabledColor,
                           // trailing:
@@ -246,6 +261,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) => ChatRoom(
+                                  // countTextState: countTextState,
                                   conversationId: state.conversations[index].id,
                                   username:
                                       state.conversations[index].users[0].id ==
@@ -258,6 +274,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                                 ),
                               ),
                             );
+
+                            // countTextState?.resetCount();
+
                             // print(state.conversations[index].id);
                           },
                           title: Text(
@@ -297,9 +316,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
 class CountText extends StatefulWidget {
   final Conversation conversation;
+  // final Function(_CountTextState?) onResetCount;
+
   const CountText({
     Key? key,
     required this.conversation,
+    // required this.onResetCount,
   }) : super(key: key);
 
   @override
@@ -320,20 +342,30 @@ class _CountTextState extends State<CountText> {
 
     preferences.setString(id, count);
 
-    // return count;
+    logger.w('Count to set: $count');
+  }
+
+  resetCount() {
+    setState(() {
+      count = 0;
+      setCount(widget.conversation.id, '0');
+    });
   }
 
   @override
   void initState() {
+    // widget.onResetCount(this);
     getConversationCount(widget.conversation.id).then((value) {
       if (value != '') {
-        logger.f('initial count $count');
         setState(() {
           count = int.parse(value);
         });
+        logger.f('initial count $value');
       }
     });
+
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      logger.w('message: $message');
       if (message.notification != null) {
         print(
             'Message also contained a notification: ${message.notification!.title!}');
@@ -342,16 +374,15 @@ class _CountTextState extends State<CountText> {
         logger.e(message.data);
         if (message.data['conversationId'] == widget.conversation.id) {
           logger.f('count is: $count');
-          setState(() {
-            count++;
-          });
-          setCount(widget.conversation.id, count.toString());
+
+          context.read<CounterCubit>().addNotification();
+
+          // setState(() {
+          //   count++;
+          //   setCount(widget.conversation.id, count.toString());
+          // });
         }
       }
-
-      // setState(() {
-      //   count++;
-      // });
     });
     super.initState();
   }
@@ -359,6 +390,33 @@ class _CountTextState extends State<CountText> {
   int count = 0;
   @override
   Widget build(BuildContext context) {
-    return Text(count.toString());
+    // BlocProvider.of<CounterCubit>(context, listen: true);
+
+    final stateWatch = BlocProvider.of<CounterCubit>(context, listen: true);
+    return 3 != 0
+        ? GestureDetector(
+            onTap: () {
+              context.read<CounterCubit>().addNotification();
+            },
+            child: BlocBuilder<CounterCubit, int>(
+              builder: (context, state) {
+                print(stateWatch.state);
+                return CircleAvatar(
+                  radius: 12,
+                  child: Text(
+                    state.toString(),
+                    style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                  ),
+                );
+              },
+            ),
+          )
+        : const SizedBox(
+            height: 4,
+            width: 4,
+          );
   }
 }

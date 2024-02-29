@@ -83,7 +83,9 @@ process.on("unhandledRejection", (err) => {
 });
 
 const connectDB = require("./db");
-connectDB();
+connectDB().catch(console.dir);
+
+
 
 // const express = require('express');
 // const path = require('path');

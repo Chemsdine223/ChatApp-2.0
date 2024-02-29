@@ -36,6 +36,9 @@ const userSchema = mongoose.Schema(
   }
 );
 
+
+
+
 userSchema.methods.toJSON = function () {
   const userObject = this.toObject();
   delete userObject.password;
@@ -44,3 +47,5 @@ userSchema.methods.toJSON = function () {
 };
 
 module.exports = mongoose.model("User", userSchema);
+
+

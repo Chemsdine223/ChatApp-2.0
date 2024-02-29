@@ -18,9 +18,10 @@ import '../../Constants/constants.dart';
 
 class NetworkServices {
   // static const baseUrl = 'http://127.0.0.1:5000';
-  static const baseUrl = 'http://172.20.10.5:5000';
+  // static const baseUrl = 'http://172.20.10.5:5000';
   // static const baseUrl = 'http://192.168.100.30:5000';
   // static const baseUrl = 'http://192.168.0.112:5000';
+  static const baseUrl = 'http://192.168.1.212:5000';
   final loginUrl = '$baseUrl/api/login';
   final registerUrl = '$baseUrl/api/register';
   final getConvos = '$baseUrl/api/getConvos';

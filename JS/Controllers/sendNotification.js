@@ -2,8 +2,8 @@ const { getMessaging } = require("firebase-admin/messaging");
 
 exports.sendMessageNotification = (title, body, token) => {
   const message = {
-    data:{
-      "conversationId":"65de551338a5020b8e95b255"
+    data: {
+      conversationId: "65df33e819cb8b390cd10c5a",
     },
     notification: {
       title: title,
@@ -31,11 +31,11 @@ exports.sendMessageNotification = (title, body, token) => {
 exports.sendNotification = (req, res, next) => {
   const message = {
     notification: {
-      title: "Bro stop killing this sh*t",
+      title: "Hello",
       body: "Come on now.",
     },
     token:
-      "cbPuzRbDSwSAym8crBzqbP:APA91bHVbL6oXBaSvOwBX0mOmR3pw-ZtJpN48bW-UhtRjfE79ptJRGGiZ3pOqN-2cU4hGbpG_i49ktEuKPpllNiByQMK4ZFxAxabsoAzD5VWGl0pCc0ap6iwPh9AB3Su_3hpslULlIMo",
+      "eNq8JAZRRvys3Uj9bDuIpR:APA91bHqn18HR6_Ga3Jf0Qay-rhgFEcqtziYRY02GV9GSsQQjfNit78SoTEP9IhIcdaRjajXM52znYECn1RLFWqTgSk3GYS_itXRR_wLDkMJ5UhFQXgN3hg6Ga0nZg9B_jbshzy0-tVJ",
   };
 
   getMessaging()
