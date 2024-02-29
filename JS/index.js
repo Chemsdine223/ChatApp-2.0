@@ -3,31 +3,25 @@ const http = require("http");
 const cors = require("cors");
 const setupSocket = require("./middleware/io"); // Change the path accordingly
 const redis = require("./Controllers/redisController");
-// const x = 
+// const x =
 const app = express();
 require("dotenv").config();
 
 var admin = require("firebase-admin");
 
-
-
-
-
-
 const { initializeApp, applicationDefault } = require("firebase-admin/app");
-
 
 app.use(express.json());
 const server = http.createServer(app);
 // http://localhost:5000/
 
-process.env.GOOGLE_APPLICATION_CREDENTIALS
+process.env.GOOGLE_APPLICATION_CREDENTIALS;
 
 var serviceAccount = require("./pushnotifications-d9a92-firebase-adminsdk-stspy-61edb0b08f.json");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  projectId: "pushnotifications-d9a92", 
+  projectId: "pushnotifications-d9a92",
 });
 
 var whitelist = ["http://localhost:5000"]; //white list consumers
@@ -74,6 +68,8 @@ var corsOptions = {
 
 const io = setupSocket(server);
 
+// setupSocket
+
 server.listen(PORT, () => console.log(`Server Connected to port ${PORT}`));
 
 // Handling Error
@@ -83,9 +79,9 @@ process.on("unhandledRejection", (err) => {
 });
 
 const connectDB = require("./db");
-connectDB().catch(console.dir);
+connectDB(io).catch(console.dir);
 
-
+module.exports = { io, server };
 
 // const express = require('express');
 // const path = require('path');

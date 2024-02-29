@@ -17,11 +17,12 @@ function setupSocket(server) {
     const apiKey = socket.handshake.headers.key;
     const userId = socket.handshake.headers.id;
 
-    // console.log(apiKey);
+    console.log(apiKey);
 
     console.log(`User id:${userId} User key: ${apiKey}`);
 
     if (!apiKey) {
+      
       return next(new Error("Authentication failed. No key provided."));
     }
 
@@ -40,9 +41,11 @@ function setupSocket(server) {
         next();
       })
       .catch((error) => {
+
         return next(new Error("Authentication failed. Invalid API key."));
       });
   });
+  
 
   io.on("connection", (socket) => {
     console.log(activeUsers);
