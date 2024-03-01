@@ -1,10 +1,8 @@
 const ChatRoom = require("../Models/ChatRoom");
 // const redis = require('redis');
-const redis = require("./redisController") 
+const redis = require("./redisController");
 exports.getConversations = async (req, res, next) => {
   try {
-
-
     // await redis.set("mykey", "Hello from node redis");
     // const myKeyValue = await redis.get("mykey");
     // console.log(myKeyValue);
@@ -30,7 +28,7 @@ exports.getConversations = async (req, res, next) => {
 
     existingConversations = await redis.get(userIdString);
     // console.log(existingConversations);
-    
+
     // console.log(if);
     // if (existingConversations) {
     //   // console.log("sations from my cache");
@@ -39,11 +37,11 @@ exports.getConversations = async (req, res, next) => {
     //   res.status(200).json({conversations: convos});
     //   return;
 
-      
     // }
 
     const conversations = await ChatRoom.find({
       users: { $elemMatch: { _id: userIdString } },
+      "deletedFor": { $nin: [userIdString] },
     });
 
     if (conversations.length > 0) {

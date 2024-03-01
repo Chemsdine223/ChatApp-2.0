@@ -17,6 +17,9 @@ const messageSchema = mongoose.Schema(
       type: Schema.Types.ObjectId,
       ref: "ChatRoom",
     },
+    isSeen:{
+      type: Boolean
+    }
   },
   {
     timestamps: true,
