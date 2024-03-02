@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:chat_app/Constants/constants.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
@@ -20,9 +21,45 @@ class ConversationsCubit extends Cubit<ConversationsState> {
     emit(ConversationsLoading());
     try {
       final response = await NetworkServices().getConversations();
-      emit(ConversationsLoaded(conversations: response));
+      emit(ConversationsLoaded(
+        conversations: response,
+      ));
     } catch (e) {
       emit(ConversationsError(errorMessage: e.toString()));
+    }
+  }
+
+  seenMessage(int messageIndex, bool isSeen, String conversationId) {
+    if (state is ConversationsLoaded) {
+      final sstate = state as ConversationsLoaded;
+
+      final existingIndex =
+          sstate.conversations.indexWhere((c) => c.id == conversationId);
+
+      if (existingIndex != -1) {
+        logger.f(
+            'Before updating isSeen: ${sstate.conversations[existingIndex].messages[messageIndex].isSeen}');
+        sstate.conversations[existingIndex].messages[messageIndex].isSeen =
+            isSeen;
+        logger.f(
+            'After updating isSeen: ${sstate.conversations[existingIndex].messages[messageIndex].isSeen}');
+
+// emit(ConversationsLoaded(conversations: List.from(sstate.conversations)));
+
+        // Update the isSeen value directly without creating a new instance
+        // sstate.conversations[existingIndex].messages[messageIndex].isSeen =
+        //     isSeen;
+
+        // logger.i(sstate.conversations[0].messages[0].isSeen);
+
+        // Emit the updated state
+      }
+      final seen =
+          sstate.conversations[existingIndex].messages[messageIndex].isSeen;
+      logger.e('seen: $seen');
+
+      emit(ConversationsLoaded(conversations: sstate.conversations));
+      logger.f('emitted');
     }
   }
 
@@ -41,10 +78,14 @@ class ConversationsCubit extends Cubit<ConversationsState> {
           final updatedConversations =
               List<Conversation>.from(sstate.conversations);
           updatedConversations.removeAt(existingIndex);
-          emit(ConversationsLoaded(conversations: updatedConversations));
+          emit(ConversationsLoaded(
+            conversations: updatedConversations,
+          ));
         }
       } else {
-        emit(ConversationsLoaded(conversations: sstate.conversations));
+        emit(ConversationsLoaded(
+          conversations: sstate.conversations,
+        ));
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text("Could't delete conversation")));
@@ -58,14 +99,18 @@ class ConversationsCubit extends Cubit<ConversationsState> {
     try {
       final conversation = await NetworkServices().newChat(phone);
       conversations.add(conversation);
-      emit(ConversationsLoaded(conversations: conversations));
+      emit(ConversationsLoaded(
+        conversations: conversations,
+      ));
       // log('Hi');
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text(e.toString())));
       }
-      emit(ConversationsLoaded(conversations: conversations));
+      emit(ConversationsLoaded(
+        conversations: conversations,
+      ));
     }
   }
 
@@ -91,7 +136,11 @@ class ConversationsCubit extends Cubit<ConversationsState> {
         ));
       }
 
-      emit(ConversationsLoaded(conversations: List.from(sstate.conversations)));
+      emit(ConversationsLoaded(
+        conversations: List.from(
+          sstate.conversations,
+        ),
+      ));
     }
   }
 }

@@ -12,6 +12,7 @@ final class ConversationsInitial extends ConversationsState {}
 
 final class ConversationsLoaded extends ConversationsState {
   final List<Conversation> conversations;
+  // final dynamic test;
 
   const ConversationsLoaded({required this.conversations});
 
@@ -21,8 +22,9 @@ final class ConversationsLoaded extends ConversationsState {
 
 final class ConversationsLoading extends ConversationsState {}
 
-final class DeletingConversation extends ConversationsState{}
-final class DeletingConversationError extends ConversationsState{}
+final class DeletingConversation extends ConversationsState {}
+
+final class DeletingConversationError extends ConversationsState {}
 
 final class NewMessage extends ConversationsState {}
 

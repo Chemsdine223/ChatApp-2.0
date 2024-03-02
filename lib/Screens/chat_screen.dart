@@ -122,12 +122,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       body: Center(
         child: BlocBuilder<ConversationsCubit, ConversationsState>(
           builder: (context, state) {
-            // logger.d(state);
+            logger.d(state);
             if (state is ConversationsLoading) {
               return const Center(
                 child: CircularProgressIndicator(),
               );
             } else if (state is ConversationsLoaded) {
+              // context.watch<ConversationsCubit>().state;
               log(state.conversations.length.toString());
               if (state.conversations.isEmpty) {
                 return const Center(
@@ -147,6 +148,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                                   NetworkServices.id
                               ? state.conversations[index].users[1]
                               : state.conversations[index].users[0];
+
                       // print(state.conversations[index].messages.last.content);
                       return Slidable(
                         endActionPane: ActionPane(
@@ -187,13 +189,17 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                           ],
                         ),
                         child: ListTile(
-                          trailing: CountText(
-                            conversation: conversation,
-                            // onResetCount: (childState) {
-                            //   // Receive the child widget state
-                            //   // countTextState = childState;
-                            // },
-                          ),
+                          trailing: Text(state.conversations[index].messages
+                              .elementAt(0)
+                              .isSeen
+                              .toString()),
+                          // trailing: CountText(
+                          //   conversation: conversation,
+                          //   // onResetCount: (childState) {
+                          //   //   // Receive the child widget state
+                          //   //   // countTextState = childState;
+                          //   // },
+                          // ),
 
                           // tileColor: Theme.of(context).disabledColor,
                           // trailing:

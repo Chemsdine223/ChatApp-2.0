@@ -23,6 +23,11 @@ class SocketProvider {
     });
 
     socketService.socket.on('seen', (data) {
+      conversationsCubit.seenMessage(
+        data['message'],
+        data['isSeen'],
+        data['conversation'],
+      );
       logger.f(data.toString());
     });
 

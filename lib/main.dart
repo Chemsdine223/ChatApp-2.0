@@ -138,6 +138,7 @@ class MyApp extends ConsumerWidget {
                 }
               },
               builder: (context, state) {
+                // context.watch<ConversationsCubit>().state;
                 if (state is AuthenticationLoading) {
                   return const Scaffold(
                     body: Center(
