@@ -26,6 +26,28 @@ class ConversationsCubit extends Cubit<ConversationsState> {
     }
   }
 
+  deleteConversation(String conversationId, String userId, BuildContext context) async {
+    if (state is ConversationsLoaded) {
+      final sstate = state as ConversationsLoaded;
+      final res =
+          await NetworkServices().deleteConversation(userId, conversationId);
+
+      if (res == true) {
+        final existingIndex =
+            sstate.conversations.indexWhere((c) => c.id == conversationId);
+
+        if (existingIndex != -1) {
+          final updatedConversations =
+              List<Conversation>.from(sstate.conversations);
+          updatedConversations.removeAt(existingIndex);
+          emit(ConversationsLoaded(conversations: updatedConversations));
+        }
+      } else {
+        emit(ConversationsLoaded(conversations: sstate.conversations));
+      }
+    }
+  }
+
   createConversation(List<Conversation> conversations, String phone,
       BuildContext context) async {
     try {

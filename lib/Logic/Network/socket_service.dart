@@ -9,8 +9,9 @@ import 'package:socket_io_client/socket_io_client.dart';
 class SocketService {
   Socket socket = manager.io(
       // 'http://localhost:5000',
-      // 'http://172.20.10.5:5000',
-      'http://192.168.1.212:5000',
+      // ! Phone IP adress: 
+      'http://172.20.10.5:5000',
+      // 'http://192.168.1.212:5000',
       // 'http://192.168.0.112:5000',
       // 'http://192.168.100.30:5000',
       OptionBuilder().setTransports(['websocket']).build());

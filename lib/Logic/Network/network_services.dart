@@ -18,10 +18,11 @@ import '../../Constants/constants.dart';
 
 class NetworkServices {
   // static const baseUrl = 'http://127.0.0.1:5000';
-  // static const baseUrl = 'http://172.20.10.5:5000';
+  // ! Phone IP adresse
+  static const baseUrl = 'http://172.20.10.5:5000';
   // static const baseUrl = 'http://192.168.100.30:5000';
   // static const baseUrl = 'http://192.168.0.112:5000';
-  static const baseUrl = 'http://192.168.1.212:5000';
+  // static const baseUrl = 'http://192.168.1.212:5000';
   final loginUrl = '$baseUrl/api/login';
   final registerUrl = '$baseUrl/api/register';
   final getConvos = '$baseUrl/api/getConvos';
@@ -29,6 +30,7 @@ class NetworkServices {
   final createConvo = '$baseUrl/api/createConversation';
   final deleteAccount = '$baseUrl/api/deleteAccount';
   final editPhoneNumber = '$baseUrl/api/editPhone';
+  final deleteConvo = '$baseUrl/api/deleteConversation';
 
   static String token = '';
   static String id = '';
@@ -308,5 +310,25 @@ class NetworkServices {
     } else {
       return false;
     }
+  }
+
+  Future<bool> deleteConversation(String userId, String conversationId) async {
+    final res = await http.post(Uri.parse(deleteConvo),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Api-Key ${NetworkServices.key}'
+        },
+        body: jsonEncode({
+          "conversationId": conversationId,
+          "userId": userId,
+        }));
+    // final data = jsonDecode(res.body);
+
+    logger.f(res.statusCode.toString());
+    if (res.statusCode != 200) {
+      return false;
+      // throw data['message'];
+    }
+    return true;
   }
 }

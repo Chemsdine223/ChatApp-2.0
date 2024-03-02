@@ -2,7 +2,7 @@ const ChatRoom = require("../Models/ChatRoom");
 const user = require("../Models/user");
 const connectDB = require("../db");
 
-exports.testEp = async (req, res, next) => {
+exports.seenStatus = async (req, res, next) => {
   const updateData = {
     $set: {
       "messages.$[element].isSeen": true,

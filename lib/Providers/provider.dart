@@ -22,6 +22,10 @@ class SocketProvider {
       logger.f('Bye ${ref.state}');
     });
 
+    socketService.socket.on('seen', (data) {
+      logger.f(data.toString());
+    });
+
     socketService.socket.onConnect((data) {
       logger.e('Connected from provider');
       connectionCubit.reset();

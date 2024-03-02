@@ -21,6 +21,9 @@ final class ConversationsLoaded extends ConversationsState {
 
 final class ConversationsLoading extends ConversationsState {}
 
+final class DeletingConversation extends ConversationsState{}
+final class DeletingConversationError extends ConversationsState{}
+
 final class NewMessage extends ConversationsState {}
 
 final class ConversationsError extends ConversationsState {

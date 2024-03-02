@@ -121,17 +121,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                                 Container(
                                                   height: 100,
                                                   width: 100,
-                                                  decoration: BoxDecoration(
+                                                  decoration:
+                                                      const BoxDecoration(
                                                     color: Colors.grey,
                                                     shape: BoxShape.circle,
-                                                    image: user.avatar.isEmpty
-                                                        ? null
-                                                        : DecorationImage(
-                                                            fit: BoxFit.fill,
-                                                            image: NetworkImage(
-                                                              user.avatar,
-                                                            ),
-                                                          ),
+                                                    // image: user.avatar.isEmpty
+                                                    //     ? null
+                                                    //     : DecorationImage(
+                                                    //         fit: BoxFit.fill,
+                                                    //         image: NetworkImage(
+                                                    //           user.avatar,
+                                                    //         ),
+                                                    //       ),
                                                   ),
                                                   child: user.avatar.isEmpty
                                                       ? const Icon(Icons

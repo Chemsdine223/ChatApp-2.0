@@ -162,7 +162,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                           children: [
                             // A SlidableAction can have an icon and/or a label.
                             SlidableAction(
-                              onPressed: (context) {},
+                              onPressed: (context) {
+                                context
+                                    .read<ConversationsCubit>()
+                                    .deleteConversation(
+                                        state.conversations[index].id,
+                                        NetworkServices.id);
+                              },
                               backgroundColor:
                                   Theme.of(context).colorScheme.errorContainer,
                               foregroundColor: Colors.white,
@@ -208,11 +214,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                             child: Stack(
                               children: [
                                 CircleAvatar(
-                                  backgroundImage: otherUser.avatar.isEmpty
-                                      ? null
-                                      : NetworkImage(
-                                          otherUser.avatar,
-                                        ),
+                                  // backgroundImage: otherUser.avatar.isEmpty
+                                  //     ? null
+                                  //     : NetworkImage(
+                                  //         otherUser.avatar,
+                                  //       ),
                                   backgroundColor: Colors.grey.shade300,
                                   child: otherUser.avatar.isEmpty
                                       ? const Icon(Icons.person_2_rounded)
