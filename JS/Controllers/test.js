@@ -2,30 +2,28 @@ const ChatRoom = require("../Models/ChatRoom");
 const user = require("../Models/user");
 const connectDB = require("../db");
 
-exports.testEp = async () => {
+exports.testEp = async (req, res, next) => {
   const updateData = {
     $set: {
-      "messages.$[].content": "someValue", // Update all messages' content
+      "messages.$[element].isSeen": true,
     },
   };
 
+  const options = {
+    arrayFilters: [{ "element.isSeen": { $ne: true } }],
+  };
+
   try {
-    const update = await ChatRoom.updateMany({}, updateData);
-    console.log({update});
+    const update = await ChatRoom.updateMany({}, updateData, options);
+    console.log({ update });
 
-
-
-    // let conn = await connectDB();
-
-    // await user.create({
-    //   username: "Username",
-    //   phone: "332",
-    //   firstname: "fn",
-    //   lastname: "ln",
-    //   avatar: "a",
-    //   deviceToken: "cccc",
-    // });
+    return res.status(200).json({
+      message: "Updated status",
+    });
   } catch (error) {
     console.log(error);
+    return res.status(200).json({
+      message: "Update failure",
+    });
   }
 };

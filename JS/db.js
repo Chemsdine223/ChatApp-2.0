@@ -43,37 +43,43 @@ async function monitorCollection(client, io, timeInMS = 60000, pipeline = []) {
 
   changeStream.on("change", (next) => {
     const conversation = next.documentKey._id;
-    console.log({next});
-
-
+    
     if (next.operationType === "update") {
       const updatedFields = next.updateDescription.updatedFields;
-
+      
       for (const key in updatedFields) {
         if (Object.hasOwnProperty.call(updatedFields, key)) {
-          const match = key.match(/(\d+)/);
+          // Split the key to access individual properties
+          const keys = key.split(".");
 
-          if (match) {
-            const index = parseInt(match[0]);
-            const receiver = next.fullDocument.messages[index].receiver;
+          console.log({keys});
+          
+          // Check if the key includes 'messages' and 'isSeen'
+          if (keys.includes("messages") && keys.includes("isSeen")) {
+            console.log("Here we are");
+            // Get the index from the key
+            const index = parseInt(keys[keys.indexOf("messages") + 1]);
 
-            console.log(index);
+            // Access the isSeen value
+            const isSeen = updatedFields[key];
+
+            // Access the relevant information from next.fullDocument
+            const message = next.fullDocument.messages[index];
+            const receiver = message.receiver;
 
             io.to(String(receiver._id)).emit("seen", {
               message: index,
+              isSeen: isSeen,
               conversation: conversation,
             });
 
-            console.log("Sent seen event for index:", index);
-          } else {
-            console.log("No index found in the key:", key);
+            console.log("Sent seen event to:", receiver._id);
           }
         }
       }
     }
   });
 }
-
 
 function closeChangeStream(timeInMs = 60000, changeStream) {
   return new Promise((resolve) => {
