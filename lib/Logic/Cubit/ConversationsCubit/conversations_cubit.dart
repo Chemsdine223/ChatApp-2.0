@@ -26,7 +26,8 @@ class ConversationsCubit extends Cubit<ConversationsState> {
     }
   }
 
-  deleteConversation(String conversationId, String userId, BuildContext context) async {
+  deleteConversation(
+      String conversationId, String userId, BuildContext context) async {
     if (state is ConversationsLoaded) {
       final sstate = state as ConversationsLoaded;
       final res =
@@ -44,6 +45,10 @@ class ConversationsCubit extends Cubit<ConversationsState> {
         }
       } else {
         emit(ConversationsLoaded(conversations: sstate.conversations));
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("Could't delete conversation")));
+        }
       }
     }
   }

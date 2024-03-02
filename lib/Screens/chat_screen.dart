@@ -167,7 +167,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                                     .read<ConversationsCubit>()
                                     .deleteConversation(
                                         state.conversations[index].id,
-                                        NetworkServices.id);
+                                        NetworkServices.id,
+                                        context);
                               },
                               backgroundColor:
                                   Theme.of(context).colorScheme.errorContainer,
