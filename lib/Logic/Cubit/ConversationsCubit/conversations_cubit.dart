@@ -16,6 +16,7 @@ class ConversationsCubit extends Cubit<ConversationsState> {
   ConversationsCubit() : super(ConversationsInitial()) {
     getConversations();
   }
+
   Future<void> getConversations() async {
     print('getting conversations');
     emit(ConversationsLoading());
@@ -29,7 +30,7 @@ class ConversationsCubit extends Cubit<ConversationsState> {
     }
   }
 
-  seenMessage(int messageIndex, bool isSeen, String conversationId) {
+  seenMessage(int messageIndex, bool isSeen, String conversationId) async {
     if (state is ConversationsLoaded) {
       final sstate = state as ConversationsLoaded;
 
@@ -39,28 +40,30 @@ class ConversationsCubit extends Cubit<ConversationsState> {
       if (existingIndex != -1) {
         logger.f(
             'Before updating isSeen: ${sstate.conversations[existingIndex].messages[messageIndex].isSeen}');
-        sstate.conversations[existingIndex].messages[messageIndex].isSeen =
-            isSeen;
+
+        // Create a copy of the conversation and update the specific message
+        final updatedConversation =
+            sstate.conversations[existingIndex].copyWith(
+          messages: List.from(sstate.conversations[existingIndex].messages)
+            ..[messageIndex] = sstate
+                .conversations[existingIndex].messages[messageIndex]
+                .copyWith(isSeen: isSeen),
+        );
+
+        // Create a copy of the conversations list and update the specific conversation
+        final List<Conversation> updatedConversations =
+            List.from(sstate.conversations)
+              ..[existingIndex] = updatedConversation;
+
         logger.f(
-            'After updating isSeen: ${sstate.conversations[existingIndex].messages[messageIndex].isSeen}');
-
-// emit(ConversationsLoaded(conversations: List.from(sstate.conversations)));
-
-        // Update the isSeen value directly without creating a new instance
-        // sstate.conversations[existingIndex].messages[messageIndex].isSeen =
-        //     isSeen;
-
-        // logger.i(sstate.conversations[0].messages[0].isSeen);
+            'After updating isSeen: ${updatedConversations[existingIndex].messages[messageIndex].isSeen}');
 
         // Emit the updated state
+        emit(ConversationsLoaded(conversations: updatedConversations));
       }
-      final seen =
-          sstate.conversations[existingIndex].messages[messageIndex].isSeen;
-      logger.e('seen: $seen');
-
-      emit(ConversationsLoaded(conversations: sstate.conversations));
-      logger.f('emitted');
     }
+
+    logger.f('emitted');
   }
 
   deleteConversation(
@@ -83,9 +86,7 @@ class ConversationsCubit extends Cubit<ConversationsState> {
           ));
         }
       } else {
-        emit(ConversationsLoaded(
-          conversations: sstate.conversations,
-        ));
+        emit(ConversationsLoaded(conversations: sstate.conversations));
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text("Could't delete conversation")));

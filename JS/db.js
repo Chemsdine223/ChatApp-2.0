@@ -43,17 +43,17 @@ async function monitorCollection(client, io, timeInMS = 60000, pipeline = []) {
 
   changeStream.on("change", (next) => {
     const conversation = next.documentKey._id;
-    
+
     if (next.operationType === "update") {
       const updatedFields = next.updateDescription.updatedFields;
-      
+
       for (const key in updatedFields) {
         if (Object.hasOwnProperty.call(updatedFields, key)) {
           // Split the key to access individual properties
           const keys = key.split(".");
 
-          console.log({keys});
-          
+          console.log({ keys });
+
           // Check if the key includes 'messages' and 'isSeen'
           if (keys.includes("messages") && keys.includes("isSeen")) {
             console.log("Here we are");

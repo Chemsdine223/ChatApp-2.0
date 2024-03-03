@@ -28,7 +28,7 @@ class SocketProvider {
         data['isSeen'],
         data['conversation'],
       );
-      logger.f(data.toString());
+      // logger.f(data.toString());
     });
 
     socketService.socket.onConnect((data) {

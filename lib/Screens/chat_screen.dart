@@ -189,10 +189,19 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                           ],
                         ),
                         child: ListTile(
-                          trailing: Text(state.conversations[index].messages
-                              .elementAt(0)
-                              .isSeen
-                              .toString()),
+                          trailing: BlocBuilder<ConversationsCubit,
+                              ConversationsState>(
+                            builder: (context, state) {
+                              log(state.toString());
+                              if (state is ConversationsLoaded) {
+                                return Text(state.conversations[index].messages
+                                    .elementAt(0)
+                                    .isSeen
+                                    .toString());
+                              }
+                              return const Text('NOt yet');
+                            },
+                          ),
                           // trailing: CountText(
                           //   conversation: conversation,
                           //   // onResetCount: (childState) {

@@ -3,7 +3,7 @@ import 'package:chat_app/Models/user.dart';
 class Message {
   final String conversationId;
   final String content;
-  bool isSeen;
+  final bool isSeen;
   final UserModel sender;
   final UserModel receiver;
 
