@@ -1,13 +1,13 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:chat_app/Constants/constants.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
 import 'package:chat_app/Models/conversation.dart';
 import 'package:chat_app/Logic/Network/network_services.dart';
 
+import '../../../Constants/constants.dart';
 import '../../../Models/message.dart';
 
 part 'conversations_state.dart';
@@ -38,8 +38,8 @@ class ConversationsCubit extends Cubit<ConversationsState> {
           sstate.conversations.indexWhere((c) => c.id == conversationId);
 
       if (existingIndex != -1) {
-        logger.f(
-            'Before updating isSeen: ${sstate.conversations[existingIndex].messages[messageIndex].isSeen}');
+        // logger.f(
+        //     'Before updating isSeen: ${sstate.conversations[existingIndex].messages[messageIndex].isSeen}');
 
         // Create a copy of the conversation and update the specific message
         final updatedConversation =
@@ -55,8 +55,8 @@ class ConversationsCubit extends Cubit<ConversationsState> {
             List.from(sstate.conversations)
               ..[existingIndex] = updatedConversation;
 
-        logger.f(
-            'After updating isSeen: ${updatedConversations[existingIndex].messages[messageIndex].isSeen}');
+        // logger.f(
+        //     'After updating isSeen: ${updatedConversations[existingIndex].messages[messageIndex].isSeen}');
 
         // Emit the updated state
         emit(ConversationsLoaded(conversations: updatedConversations));

@@ -8,7 +8,7 @@ const { createConversation } = require("../Controllers/createConversation");
 const { deleteAccount } = require("../Controllers/deleteAccount");
 const { editPhone } = require("../Controllers/editPhone");
 const { sendNotification } = require("../Controllers/sendNotification");
-const { seenStatus } = require("../Controllers/test");
+const { seenStatus } = require("../Controllers/seen");
 const { deleteConversation } = require("../Controllers/deleteConversation");
 const router = express.Router();
 
@@ -23,7 +23,7 @@ router.route("/createConversation").post(verifyToken, createConversation);
 router.route("/deleteAccount").post(verifyToken, deleteAccount);
 router.route("/editPhone").put(verifyToken, editPhone);
 router.route("/send").post(sendNotification);
-router.route("/test").post(seenStatus);
+router.route("/seen").post(verifyToken,seenStatus);
 router.route("/deleteConversation").post(deleteConversation);
 
 module.exports = router;

@@ -194,10 +194,27 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                             builder: (context, state) {
                               log(state.toString());
                               if (state is ConversationsLoaded) {
-                                return Text(state.conversations[index].messages
-                                    .elementAt(0)
-                                    .isSeen
-                                    .toString());
+                                return state.conversations[index].messages
+                                        .where((message) =>
+                                            message.isSeen == false)
+                                        .toList()
+                                        .isEmpty
+                                    ? const Text('')
+                                    : CircleAvatar(
+                                        radius: 12,
+                                        backgroundColor: Colors.blueAccent,
+                                        child: Text(
+                                          state.conversations[index].messages
+                                              .where((message) =>
+                                                  message.isSeen == false)
+                                              .toList()
+                                              .length
+                                              .toString(),
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodySmall,
+                                        ),
+                                      );
                               }
                               return const Text('NOt yet');
                             },

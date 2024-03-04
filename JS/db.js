@@ -46,49 +46,50 @@ async function monitorCollection(client, io, timeInMS = 60000, pipeline = []) {
 
     if (next.operationType === "update") {
       const updatedFields = next.updateDescription.updatedFields;
+      console.log({ updatedFields });
+        for (const key in updatedFields) {
+          if (Object.hasOwnProperty.call(updatedFields, key)) {
+            // Split the key to access individual properties
+            const keys = key.split(".");
 
-      for (const key in updatedFields) {
-        if (Object.hasOwnProperty.call(updatedFields, key)) {
-          // Split the key to access individual properties
-          const keys = key.split(".");
+            console.log({ keys });
 
-          console.log({ keys });
+            // Check if the key includes 'messages' and 'isSeen'
+            if (keys.includes("messages") && keys.includes("isSeen")) {
+              console.log("Here we are");
+              // Get the index from the key
+              const index = parseInt(keys[keys.indexOf("messages") + 1]);
 
-          // Check if the key includes 'messages' and 'isSeen'
-          if (keys.includes("messages") && keys.includes("isSeen")) {
-            console.log("Here we are");
-            // Get the index from the key
-            const index = parseInt(keys[keys.indexOf("messages") + 1]);
+              // Access the isSeen value
+              const isSeen = updatedFields[key];
 
-            // Access the isSeen value
-            const isSeen = updatedFields[key];
+              // Access the relevant information from next.fullDocument
+              const message = next.fullDocument.messages[index];
+              const receiver = message.receiver;
 
-            // Access the relevant information from next.fullDocument
-            const message = next.fullDocument.messages[index];
-            const receiver = message.receiver;
+              io.to(String(receiver._id)).emit("seen", {
+                message: index,
+                isSeen: true,
+                conversation: conversation,
+              });
 
-            io.to(String(receiver._id)).emit("seen", {
-              message: index,
-              isSeen: isSeen,
-              conversation: conversation,
-            });
-
-            console.log("Sent seen event to:", receiver._id);
+              console.log("Sent seen event to:", receiver._id);
+            }
           }
         }
-      }
+      // }
     }
   });
 }
 
-function closeChangeStream(timeInMs = 60000, changeStream) {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      console.log("Closing the change stream");
-      changeStream.close();
-      resolve();
-    }, timeInMs);
-  });
-}
+// function closeChangeStream(timeInMs = 60000, changeStream) {
+//   return new Promise((resolve) => {
+//     setTimeout(() => {
+//       console.log("Closing the change stream");
+//       changeStream.close();
+//       resolve();
+//     }, timeInMs);
+//   });
+// }
 
 module.exports = connectDB;

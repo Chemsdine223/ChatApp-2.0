@@ -19,9 +19,11 @@ import '../../Constants/constants.dart';
 class NetworkServices {
   // static const baseUrl = 'http://127.0.0.1:5000';
   // ! Phone IP adresse
-  static const baseUrl = 'http://172.20.10.5:5000';
+  // static const baseUrl = 'http://172.20.10.5:5000';
+  // ! Mauritel 
   // static const baseUrl = 'http://192.168.100.30:5000';
-  // static const baseUrl = 'http://192.168.0.112:5000';
+  // ! Sahel
+  static const baseUrl = 'http://192.168.0.113:5000';
   // static const baseUrl = 'http://192.168.1.212:5000';
   final loginUrl = '$baseUrl/api/login';
   final registerUrl = '$baseUrl/api/register';
@@ -207,6 +209,11 @@ class NetworkServices {
       headers: {
         'Content-Type': 'application/json',
         "Authorization": "Api-Key $apiKey",
+      },
+    ).timeout(
+      const Duration(seconds: 20),
+      onTimeout: () {
+        return http.Response('Connection timeout', 408);
       },
     );
 
