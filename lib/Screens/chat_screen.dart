@@ -142,6 +142,25 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                   child: ListView.builder(
                     itemCount: state.conversations.length,
                     itemBuilder: (context, index) {
+                      List<String> unreadMessages = [];
+
+                      // for (var element in state.conversations[index].messages) {
+                      //   logger.t('working');
+                      //   if (element.isSeen == false &&
+                      //       element.conversationId ==
+                      //           state.conversations[index].id) {
+                      //     unreadMessages.add(element.id);
+                      //   }
+                      //   // return ;
+                      // }
+
+                      // logger.f('Unread messages: ${unreadMessages.length}');
+                      // unreadMessages.add(state.conversations[index].messages
+                      //     .where((message) =>
+                      //         message.isSeen == false &&
+                      //         message.receiver.id == NetworkServices.id)
+                      //     .toList());
+
                       final conversation = state.conversations[index];
                       final otherUser =
                           state.conversations[index].users[0].id ==
@@ -196,7 +215,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                               if (state is ConversationsLoaded) {
                                 return state.conversations[index].messages
                                         .where((message) =>
-                                            message.isSeen == false)
+                                            message.isSeen == false &&
+                                            message.receiver.id ==
+                                                NetworkServices.id)
                                         .toList()
                                         .isEmpty
                                     ? const Text('')
@@ -206,7 +227,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                                         child: Text(
                                           state.conversations[index].messages
                                               .where((message) =>
-                                                  message.isSeen == false)
+                                                  message.isSeen == false &&
+                                                  message.receiver.id ==
+                                                      NetworkServices.id)
                                               .toList()
                                               .length
                                               .toString(),
@@ -216,7 +239,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                                         ),
                                       );
                               }
-                              return const Text('NOt yet');
+                              return const Text('not yet');
                             },
                           ),
                           // trailing: CountText(
@@ -296,11 +319,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                             ),
                           ),
                           onTap: () {
+                            // logger.f(unreadMessages.first);
                             Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => ChatRoom(
-                                  // countTextState: countTextState,
+                                  unreadMessages: unreadMessages,
                                   conversationId: state.conversations[index].id,
                                   username:
                                       state.conversations[index].users[0].id ==

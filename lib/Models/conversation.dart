@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:chat_app/Models/user.dart';
 
 import 'message.dart';
@@ -6,13 +8,11 @@ class Conversation {
   final String id;
   final List<Message> messages;
   final List<UserModel> users;
-  // final int v;
 
   Conversation({
     required this.id,
     required this.messages,
     required this.users,
-    // required this.v,
   });
 
   factory Conversation.fromJson(Map<String, dynamic> json) {
@@ -57,4 +57,42 @@ class Conversation {
       users: users ?? this.users,
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      '_id': id,
+      'messages': messages.map((message) => message.toJson()).toList(),
+      'users': users.map((user) => user.toJson()).toList(),
+    };
+  }
+  // String toJson() => json.encode(toMap());
+
+  @override
+  String toString() =>
+      'Conversation(id: $id, messages: $messages, users: $users)';
+
+  Map<String, dynamic> toMap() {
+    final result = <String, dynamic>{};
+
+    result.addAll({'id': id});
+    result.addAll({'messages': messages.map((x) => x.toMap()).toList()});
+    result.addAll({'users': users.map((x) => x.toMap()).toList()});
+
+    return result;
+  }
+
+  factory Conversation.fromMap(Map<String, dynamic> map) {
+    return Conversation(
+      id: map['id'] ?? '',
+      messages:
+          List<Message>.from(map['messages']?.map((x) => Message.fromMap(x))),
+      users:
+          List<UserModel>.from(map['users']?.map((x) => UserModel.fromMap(x))),
+    );
+  }
+
+  // String toJson() => json.encode(toMap());
+
+  factory Conversation.weirdfromJson(String source) =>
+      Conversation.fromMap(json.decode(source));
 }

@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:chat_app/Logic/Offline/offline_conversations.dart';
+import 'package:chat_app/Logic/Offline/shared_preferences_service.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:image_picker/image_picker.dart';
@@ -19,11 +21,11 @@ import '../../Constants/constants.dart';
 class NetworkServices {
   // static const baseUrl = 'http://127.0.0.1:5000';
   // ! Phone IP adresse
-  // static const baseUrl = 'http://172.20.10.5:5000';
-  // ! Mauritel 
+  static const baseUrl = 'http://172.20.10.5:5000';
+  // ! Mauritel
   // static const baseUrl = 'http://192.168.100.30:5000';
   // ! Sahel
-  static const baseUrl = 'http://192.168.0.113:5000';
+  // static const baseUrl = 'http://192.168.0.113:5000';
   // static const baseUrl = 'http://192.168.1.212:5000';
   final loginUrl = '$baseUrl/api/login';
   final registerUrl = '$baseUrl/api/register';
@@ -33,6 +35,7 @@ class NetworkServices {
   final deleteAccount = '$baseUrl/api/deleteAccount';
   final editPhoneNumber = '$baseUrl/api/editPhone';
   final deleteConvo = '$baseUrl/api/deleteConversation';
+  final seenMessage = '$baseUrl/api/seen';
 
   static String token = '';
   static String id = '';
@@ -218,16 +221,38 @@ class NetworkServices {
     );
 
     if (response.statusCode == 200) {
+      Prefs.remove(OfflineService.keyConversations);
+
       final data = jsonDecode(response.body)['conversations'] as List<dynamic>;
       final conversations =
           data.map((json) => Conversation.fromJson(json)).toList();
 
-      // logger.f(conversations);
-      // response.body;
+      await OfflineService.saveConversations(conversations);
 
       return conversations;
     } else {
       throw jsonDecode(response.body)['message'];
+    }
+  }
+
+  Future updateSeenStatus(
+      List<String> messageIndex, String conversationId) async {
+    final response = await http.post(Uri.parse(seenMessage),
+        headers: {
+          'Content-Type': 'application/json',
+          "Authorization": "Api-Key ${NetworkServices.key}",
+        },
+        body: jsonEncode({
+          "conversationId": conversationId,
+          "messageIds": messageIndex,
+        }));
+
+    logger.f(messageIndex);
+
+    if (response.statusCode == 200) {
+      logger.e('Successfully updated, $messageIndex');
+    } else {
+      logger.e('Update failed');
     }
   }
 

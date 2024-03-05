@@ -18,6 +18,7 @@ import 'Logic/Cubit/DeleteUser/delete_user_cubit.dart';
 import 'Logic/Cubit/RegistrationFormCubit/registration_form_cubit.dart';
 import 'Logic/Network/network_services.dart';
 
+import 'Logic/Offline/shared_preferences_service.dart';
 import 'Providers/provider.dart';
 import 'Screens/chat_screen.dart';
 import 'Screens/login_screen.dart';
@@ -35,8 +36,11 @@ void main() async {
     anonKey:
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFyeGJ1d2R6bHVicXBhdG1wamV3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDc3NDY1MjUsImV4cCI6MjAyMzMyMjUyNX0.nzDWnr2uKG4Oprl3zv1yhqLrh_BA3TrisNP2Kc1Xqv8',
   );
+  await Prefs.init();
 
   requestPermission();
+
+  // OfflineService().getConversations();
 
   final t = await FirebaseMessaging.instance.getToken();
   logger.e(t);
@@ -65,6 +69,7 @@ void main() async {
 
     log('object: User $user');
   }
+
   runApp(const ProviderScope(child: MyApp()));
 }
 

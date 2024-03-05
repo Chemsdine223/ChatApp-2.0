@@ -39,6 +39,7 @@ dependencies:
   firebase_messaging: ^14.7.10
   firebase_core: ^2.24.2
   dropdown_button2: ^2.3.9
+  internet_connection_checker: ^1.0.0+1
   # firebase_storage: ^11.6.0
   # firebase_core: ^2.24.2
 

@@ -16,12 +16,13 @@ import '../Widgets/chat_bubble.dart';
 
 class ChatRoom extends ConsumerStatefulWidget {
   // final dynamic countTextState;
+  final List<String> unreadMessages;
   final String conversationId;
   final String username;
   final List<UserModel> users;
   const ChatRoom({
     Key? key,
-    // required this.countTextState,
+    required this.unreadMessages,
     required this.conversationId,
     required this.username,
     required this.users,
@@ -34,7 +35,15 @@ class ChatRoom extends ConsumerStatefulWidget {
 class _ChatRoomState extends ConsumerState<ChatRoom> {
   String typing = '';
 
- 
+  @override
+  void initState() {
+    if (widget.unreadMessages.isNotEmpty) {
+      NetworkServices()
+          .updateSeenStatus(widget.unreadMessages, widget.conversationId);
+    }
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final message0 = TextEditingController();
@@ -171,6 +180,29 @@ class _ChatRoomState extends ConsumerState<ChatRoom> {
                         final messages =
                             conversation.messages.reversed.toList();
                         final message = messages[index];
+
+                        List<String> unreadMessages = [];
+
+                        if (message.isSeen == false &&
+                            message.receiver.id == NetworkServices.id &&
+                            widget.unreadMessages.isEmpty) {
+                          logger.f('Here it is ');
+                          unreadMessages.add(message.id);
+                          NetworkServices().updateSeenStatus(
+                              unreadMessages, conversation.id);
+                        }
+
+                        // if (widget.unreadMessages.isNotEmpty) {
+                        //   logger.f('There we go');
+                        //   NetworkServices().updateSeenStatus(
+                        //       widget.unreadMessages, conversation.id);
+                        // }
+                        logger.e(widget.unreadMessages.isEmpty);
+                        // var unreadMessagesIds = [];
+
+                        // unreadMessages.add(messages.where((message) => .toList());
+
+                        // unreadMessagesIds.add(unreadMessages.where((message) => ))
 
                         return ChatBubble(
                           incoming: message.sender.id == NetworkServices.id

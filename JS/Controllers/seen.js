@@ -3,46 +3,30 @@ const connectDB = require("../db");
 
 exports.seenStatus = async (req, res, next) => {
   try {
-    const { conversationId, messageIndexes } = req.body;
+    const { conversationId, messageIds } = req.body;
 
-    if (!conversationId || !messageIndexes || !Array.isArray(messageIndexes)) {
+    if (!conversationId || !messageIds || !Array.isArray(messageIds)) {
       return res.status(400).json({
-        message: "Invalid or missing 'conversationId' or 'messageIndexes' array in the request body",
+        message: "Invalid or missing 'conversationId' or 'messageIds' array in the request body",
       });
     }
 
-    const chatRoom = await ChatRoom.findById(conversationId);
+    const updatePromises = messageIds.map(async (messageId) => {
+      if (messageId) {
+        const updateResult = await ChatRoom.updateMany(
+          { _id: conversationId, "messages._id": messageId },
+          { $set: { "messages.$.isSeen": true } }
+        );
 
-    if (!chatRoom) {
-      return res.status(404).json({
-        message: "Chat room not found",
-      });
-    }
-
-    const updateData = {};
-
-    for (const messageIndex of messageIndexes) {
-      if (messageIndex !== undefined && messageIndex >= 0 && messageIndex < chatRoom.messages.length) {
-        // Update the isSeen property using the unique conversationId and messageIndex
-        const key = `messages.${messageIndex}.isSeen`;
-        updateData[key] = true;
+        return updateResult;
       }
-    }
+    });
 
-    if (Object.keys(updateData).length === 0) {
-      return res.status(400).json({
-        message: "Invalid or missing valid 'messageIndexes' in the request body",
-      });
-    }
-
-    // Use the conversationId to identify the document to update
-    const filter = { _id: conversationId };
-
-    const updateResult = await ChatRoom.updateOne(filter, { $set: updateData });
+    const updateResults = await Promise.all(updatePromises);
 
     return res.status(200).json({
       message: "Updated status",
-      updateResult: updateResult,
+      updateResults: updateResults,
     });
   } catch (error) {
     console.error(error);

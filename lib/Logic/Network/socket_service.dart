@@ -10,10 +10,10 @@ class SocketService {
   Socket socket = manager.io(
       // 'http://localhost:5000',
       // ! Phone IP adress:
-      // 'http://172.20.10.5:5000',
+      'http://172.20.10.5:5000',
       // 'http://192.168.1.212:5000',
       // ! Sahel
-      'http://192.168.0.113:5000',
+      // 'http://192.168.0.113:5000',
       // ! Mauritel
       // 'http://192.168.100.30:5000',
       OptionBuilder().setTransports(['websocket']).build());

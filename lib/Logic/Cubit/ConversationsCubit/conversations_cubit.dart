@@ -1,11 +1,13 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:chat_app/Logic/Offline/offline_conversations.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
 import 'package:chat_app/Models/conversation.dart';
 import 'package:chat_app/Logic/Network/network_services.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 import '../../../Constants/constants.dart';
 import '../../../Models/message.dart';
@@ -14,7 +16,23 @@ part 'conversations_state.dart';
 
 class ConversationsCubit extends Cubit<ConversationsState> {
   ConversationsCubit() : super(ConversationsInitial()) {
-    getConversations();
+    InternetConnectionChecker().onStatusChange.listen(
+      (status) {
+        switch (status) {
+          // case InternetConnectionStatus.
+          case InternetConnectionStatus.connected:
+            logger.f('Data connection is available.');
+            connectionCubit.reset();
+            getConversations();
+            break;
+          case InternetConnectionStatus.disconnected:
+            connectionCubit.disconnected();
+            getLocalConversations();
+            logger.e('You are disconnected from the internet.');
+            break;
+        }
+      },
+    );
   }
 
   Future<void> getConversations() async {
@@ -26,6 +44,7 @@ class ConversationsCubit extends Cubit<ConversationsState> {
         conversations: response,
       ));
     } catch (e) {
+      logger.e(e);
       emit(ConversationsError(errorMessage: e.toString()));
     }
   }
@@ -142,6 +161,16 @@ class ConversationsCubit extends Cubit<ConversationsState> {
           sstate.conversations,
         ),
       ));
+    }
+  }
+
+  Future getLocalConversations() async {
+    try {
+      final conversations = await OfflineService().getConversations();
+      logger.f('conversations: $conversations cubit');
+      emit(ConversationsLoaded(conversations: conversations));
+    } catch (e) {
+      emit(ConversationsError(errorMessage: 'Storage error: $e'));
     }
   }
 }
