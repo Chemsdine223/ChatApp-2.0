@@ -21,24 +21,6 @@ import '../Constants/constants.dart';
 // import 'package:chat_app/Logic/Network/socket_service.dart';
 
 class NetworkServices {
-  // static const baseUrl = 'http://127.0.0.1:5000';
-  // ! Phone IP adresse
-  static const baseUrl = 'http://172.20.10.5:5000';
-  // ! Mauritel
-  // static const baseUrl = 'http://192.168.100.30:5000';
-  // ! Sahel
-  // static const baseUrl = 'http://192.168.0.103:5000';
-  // static const baseUrl = 'http://192.168.1.212:5000';
-  final loginUrl = '$baseUrl/api/login';
-  final registerUrl = '$baseUrl/api/register';
-  final getConvos = '$baseUrl/api/getConvos';
-  final getBlogs = '$baseUrl/api/getBlogs';
-  final createConvo = '$baseUrl/api/createConversation';
-  final deleteAccount = '$baseUrl/api/deleteAccount';
-  final editPhoneNumber = '$baseUrl/api/editPhone';
-  final deleteConvo = '$baseUrl/api/deleteConversation';
-  final seenMessage = '$baseUrl/api/seen';
-
   static String token = '';
   static String id = '';
   static String key = '';
@@ -137,6 +119,37 @@ class NetworkServices {
       },
       body: jsonEncode({
         "phone": phone,
+      }),
+    );
+
+    log(response.body);
+
+    final data = jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      user = response.body;
+
+      final userModel = UserModel.fromJson(data['user']);
+      await saveTokens();
+      return userModel;
+    } else {
+      throw data['message'];
+    }
+  }
+
+  Future<UserModel> editPhoto(File imageFile) async {
+    await loadTokens();
+
+    final avatar = await FirebaseStorageService.uploadImageToFirebase(
+        imageFile, DateTime.now().toString());
+
+    final response = await http.put(
+      Uri.parse(editProfilePhoto),
+      headers: {
+        'Content-Type': 'application/json',
+        "Authorization": "Api-Key $key",
+      },
+      body: jsonEncode({
+        "url": avatar,
       }),
     );
 
@@ -265,98 +278,6 @@ class NetworkServices {
     } else {
       logger.e('Update failed');
     }
-  }
-
-  Future<String> editAvatar(XFile? avatar, String url) async {
-    final File avatarFile = File(avatar!.path);
-
-    // print(url);
-
-    try {
-      final path = await supabase.storage.from('avatars').update(
-            'avatars/$url',
-            avatarFile,
-            fileOptions: const FileOptions(cacheControl: '3600', upsert: false),
-          );
-
-      log(path);
-
-      // final imageUrlResponse = await supabase.storage
-      //     .from('avatars')
-      //     .createSignedUrl('avatars/${avatar.name}', 60 * 60 * 24 * 365 * 10);
-      // print('Successfully uploaded');
-
-      // print(imageUrlResponse);
-      return 'imageUrlResponse';
-      // await supabase.storage.from('avatars').remove([
-      //   'image_picker_C934624F-C857-4815-84F5-FB711AF33BC3-47843-0000161425348E84.jpg'
-      // ]
-      //     // avatarFile,
-      //     // fileOptions: const FileOptions(cacheControl: '3600', upsert: false),
-      //     );
-
-      // final imageUrlResponse = await supabase.storage
-      //     .from('avatars')
-      //     .createSignedUrl('avatars/${avatar.name}', 60 * 60 * 24 * 365 * 10);
-
-      // print(imageUrlResponse);
-      // print('Successfully deleted');
-      // return 'imageUrlResponse';
-    } on StorageException catch (e) {
-      log(e.toString());
-      throw e.statusCode == '409' ? 'Error updating' : e.message;
-    }
-  }
-
-  Future<String> uploadAvatar(XFile? avatar) async {
-    final File avatarFile = File(avatar!.path);
-
-    try {
-      await supabase.storage.from('avatars').upload(
-            'avatars/${avatar.name}',
-            avatarFile,
-            fileOptions: const FileOptions(cacheControl: '3600', upsert: false),
-          );
-
-      final imageUrlResponse = await supabase.storage
-          .from('avatars')
-          .createSignedUrl('avatars/${avatar.name}', 60 * 60 * 24 * 365 * 10);
-      log('Successfully uploaded');
-
-      logger.d(imageUrlResponse);
-      return imageUrlResponse;
-    } on StorageException catch (e) {
-      throw e.statusCode == '409'
-          ? 'You already uploaded this image'
-          : e.message;
-    }
-  }
-
-  Future<String> uploadImage(File file) async {
-    // Directory appDocDir = await getApplicationDocumentsDirectory();
-
-    // if (_image == null) {
-    //   print('No image selected.');
-    //   return '';
-    // }
-    // isUploaded = true;
-    // setState(() {
-    //   isUploaded = true;
-    // });
-
-    String fileName = DateTime.now().millisecondsSinceEpoch.toString();
-    Reference storageReference = FirebaseStorage.instance.ref().child(fileName);
-    UploadTask uploadTask = storageReference.putFile(file);
-
-    TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() => null);
-    String downloadURL = await storageReference.getDownloadURL();
-
-    // url = downloadURL;
-    print('$downloadURL -------------------');
-    // Do something with the downloadURL, such as storing it in local storage
-
-    print('Image uploaded successfully.');
-    return downloadURL;
   }
 
   Future<bool> deleteUser() async {

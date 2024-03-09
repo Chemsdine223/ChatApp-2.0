@@ -1,9 +1,11 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:chat_app/Constants/constants.dart';
 import 'package:chat_app/Logic/Cubit/Authentication/auth_cubit.dart';
 import 'package:chat_app/Logic/Cubit/ConversationsCubit/conversations_cubit.dart';
 import 'package:chat_app/Logic/Cubit/DeleteUser/delete_user_cubit.dart';
+import 'package:chat_app/Network/firebase_storage_service.dart';
 import 'package:chat_app/Theme/theme_cubit.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -24,18 +26,13 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   final picker = ImagePicker();
-  XFile? image;
+  XFile? avatar;
   String imagePath = '';
 
   UploadTask? uploadTask;
 
-  final avatar = '';
   String usernameError = '';
   String phone = '';
-
-  bool isUploaded = false;
-  File? _image;
-  String? url;
 
   String title = 'Settings';
   bool isBottomSheetShowing = false;
@@ -52,23 +49,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
             return Stack(
               children: [
                 Scaffold(
-                  // floatingActionButton: FloatingActionButton(
-                  //   onPressed: () async {
-                  //     print(NetworkServices.id);
-                  //     // print(NetworkServices.token);
-                  //     await NetworkServices.loadTokens();
-
-                  //     // socketService.initConnection('5', '6');
-
-                  //     // SharedPreferences prefs =
-                  //     //     await SharedPreferences.getInstance();
-
-                  //     // log(message)
-                  //     // final prefs = await SharedPreferences.getInstance();
-                  //     // final userFromPrefs = prefs.getString('user');
-                  //     // log(userFromPrefs.toString());
-                  //   },
-                  // ),
                   appBar: state is AuthenticationLoading
                       ? null
                       : AppBar(
@@ -107,10 +87,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         child: BlocBuilder<AuthenticationCubit,
                             AuthenticationState>(
                           builder: (context, state) {
-                            // final NetworkImage networkImage =
                             if (state is RegisteredUser) {
-                              // return OverLay();
-                              // log(state.user.toJson());
                               final user = state.user;
                               return Padding(
                                 padding:
@@ -154,6 +131,36 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                                     alignment:
                                                         Alignment.bottomRight,
                                                     child: GestureDetector(
+                                                      onTap: () async {
+                                                        final XFile?
+                                                            imagePicked =
+                                                            await picker.pickImage(
+                                                                source:
+                                                                    ImageSource
+                                                                        .gallery);
+                                                        if (imagePicked !=
+                                                            null) {
+                                                          setState(() {
+                                                            avatar =
+                                                                imagePicked;
+                                                            imagePath =
+                                                                imagePicked
+                                                                    .path;
+                                                          });
+                                                          if (context.mounted) {
+                                                            context
+                                                                .read<
+                                                                    AuthenticationCubit>()
+                                                                .editProfilePhoto(
+                                                                    File(
+                                                                        imagePath),
+                                                                    context);
+                                                          }
+                                                        } else {
+                                                          // Handle the case where no image was picked.
+                                                          log('No image picked');
+                                                        }
+                                                      },
                                                       child: const CircleAvatar(
                                                           radius: 12,
                                                           child: Icon(
@@ -208,123 +215,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                       borderRadius: BorderRadius.circular(12),
                                       child: Column(
                                         children: [
-                                          GestureDetector(
-                                            onTap: () {
-                                              setState(() {
-                                                title = 'Change phone';
-                                                isBottomSheetShowing = true;
-                                              });
-                                              // print('Edit me');
-                                              showBottomSheet(
-                                                shape:
-                                                    const RoundedRectangleBorder(
-                                                        borderRadius:
-                                                            BorderRadius.all(
-                                                                Radius.circular(
-                                                                    0))),
-                                                backgroundColor:
-                                                    Theme.of(context)
-                                                        .canvasColor,
-                                                // shape: Border(),
-                                                enableDrag: false,
-                                                context: context,
-                                                builder: (context) {
-                                                  return BlocConsumer<
-                                                      AuthenticationCubit,
-                                                      AuthenticationState>(
-                                                    listener: (context, state) {
-                                                      if (state
-                                                          is RegisteredUser) {
-                                                        // setState(() {
-                                                        //   isBottomSheetShowing =
-                                                        //       false;
-                                                        // });
-                                                      }
-                                                    },
-                                                    builder: (context, state) {
-                                                      if (state
-                                                          is RegisteredUser) {
-                                                        phone =
-                                                            state.user.phone;
-                                                        return Container(
-                                                          height: MediaQuery.of(
-                                                                  context)
-                                                              .size
-                                                              .height,
-                                                          color:
-                                                              Theme.of(context)
-                                                                  .canvasColor,
-                                                          child: Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .symmetric(
-                                                                    horizontal:
-                                                                        12),
-                                                            child: Column(
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .start,
-                                                              children: [
-                                                                const SizedBox(
-                                                                    height: 16),
-                                                                const Text(
-                                                                    'Old phone number'),
-                                                                buildtextField(
-                                                                    context,
-                                                                    state.user
-                                                                        .phone,
-                                                                    true),
-                                                                const SizedBox(
-                                                                    height: 16),
-                                                                const Text(
-                                                                    'New phone number'),
-                                                                buildtextField(
-                                                                    context,
-                                                                    state.user
-                                                                        .phone,
-                                                                    false),
-                                                                const SizedBox(
-                                                                    height: 16),
-                                                                CustomButton(
-                                                                    onTap: () {
-                                                                      logger.e(
-                                                                          'tap');
-                                                                      context
-                                                                          .read<
-                                                                              AuthenticationCubit>()
-                                                                          .editPhoneNumber(
-                                                                              phone,
-                                                                              context);
-                                                                      setState(
-                                                                          () {
-                                                                        isBottomSheetShowing =
-                                                                            false;
-                                                                        title =
-                                                                            'Settings';
-                                                                      });
-                                                                    },
-                                                                    label:
-                                                                        'Edit phone'),
-                                                              ],
-                                                            ),
-                                                          ),
-                                                        );
-                                                      } else if (state
-                                                          is AuthenticationLoading) {
-                                                        return const OverLay();
-                                                      }
-
-                                                      return Container();
-                                                    },
-                                                  );
-                                                },
-                                              );
-                                            },
-                                            child: customTile(
-                                                const Icon(Icons
-                                                    .phone_android_rounded),
-                                                'Phone number'),
-                                          ),
+                                          _changePhone(context),
                                           Divider(
                                             thickness: 1,
                                             height: 0,
@@ -343,9 +234,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                         DeleteUserState>(
                                       listener: (context, state) {
                                         if (state is DeleteUserSuccess) {
-                                          // SocketService()
-                                          //     .socket
-                                          //     .clearListeners();
                                           Navigator.pop(context);
 
                                           context
@@ -354,25 +242,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                           context
                                               .read<RegistrationFormCubit>()
                                               .resetForm();
-                                          // await clearStorage();
-                                          // SocketService().disconnectSocket();
                                         }
-                                        // Navigator.pushReplacement(
-                                        //     context,
-                                        //     MaterialPageRoute(
-                                        //       builder: (context) =>
-                                        //           const LoginScreen(),
-                                        //     ));
                                       },
                                       child: CustomButton(
                                         color:
                                             Theme.of(context).colorScheme.error,
                                         label: 'Delete account',
                                         onTap: () async {
-                                          // final prefs = await SharedPreferences
-                                          //     .getInstance();
-                                          // prefs.clear();
-
                                           if (context.mounted) {
                                             context
                                                 .read<DeleteUserCubit>()
@@ -381,21 +257,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                             context
                                                 .read<ConversationsCubit>()
                                                 .resetConvos();
-
-                                            // socketService.initConnection();
-
-                                            // context
-                                            //     .read<ConversationsCubit>()
-                                            //     .reset();
-
-                                            // NetworkServices.id = '';
-                                            // NetworkServices.key = '';
-
-                                            // context.read<RegistrationFormCubit>().stepOne();
-
-                                            // context
-                                            //     .read<AuthenticationCubit>()
-                                            //     .resetInCaseOfError();
                                           }
                                         },
                                       ),
@@ -421,45 +282,69 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildPlaceholderImage() {
-    return const Icon(Icons.person);
-  }
+  GestureDetector _changePhone(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          title = 'Change phone';
+          isBottomSheetShowing = true;
+        });
+        // print('Edit me');
+        showBottomSheet(
+          shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(0))),
+          backgroundColor: Theme.of(context).canvasColor,
+          enableDrag: false,
+          context: context,
+          builder: (context) {
+            return BlocBuilder<AuthenticationCubit, AuthenticationState>(
+              builder: (context, state) {
+                if (state is RegisteredUser) {
+                  phone = state.user.phone;
+                  return Container(
+                    height: MediaQuery.of(context).size.height,
+                    color: Theme.of(context).canvasColor,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 16),
+                          const Text('Old phone number'),
+                          buildtextField(context, state.user.phone, true),
+                          const SizedBox(height: 16),
+                          const Text('New phone number'),
+                          buildtextField(context, state.user.phone, false),
+                          const SizedBox(height: 16),
+                          CustomButton(
+                              onTap: () {
+                                logger.e('tap');
+                                context
+                                    .read<AuthenticationCubit>()
+                                    .editPhoneNumber(phone, context);
+                                setState(() {
+                                  isBottomSheetShowing = false;
+                                  title = 'Settings';
+                                });
+                              },
+                              label: 'Edit phone'),
+                        ],
+                      ),
+                    ),
+                  );
+                } else if (state is AuthenticationLoading) {
+                  return const OverLay();
+                }
 
-  Future<void> _selectImage() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-
-    setState(() {
-      if (pickedFile != null) {
-        _image = File(pickedFile.path);
-      } else {
-        print('No image selected.');
-      }
-    });
-  }
-
-  Future<String> _uploadImage() async {
-    if (_image == null) {
-      print('No image selected.');
-      return '';
-    }
-    isUploaded = true;
-    setState(() {
-      isUploaded = true;
-    });
-
-    String fileName = DateTime.now().millisecondsSinceEpoch.toString();
-    Reference storageReference = FirebaseStorage.instance.ref().child(fileName);
-    UploadTask uploadTask = storageReference.putFile(_image!);
-
-    TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() => null);
-    String downloadURL = await storageReference.getDownloadURL();
-    url = downloadURL;
-    print('$downloadURL -------------------');
-    // Do something with the downloadURL, such as storing it in local storage
-
-    print('Image uploaded successfully.');
-    return downloadURL;
+                return Container();
+              },
+            );
+          },
+        );
+      },
+      child:
+          customTile(const Icon(Icons.phone_android_rounded), 'Phone number'),
+    );
   }
 
   Container buildtextField(

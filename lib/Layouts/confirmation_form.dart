@@ -2,11 +2,10 @@ import 'dart:developer';
 
 import 'dart:io';
 
-import 'package:chat_app/Constants/constants.dart';
 import 'package:chat_app/Logic/Cubit/RegistrationFormCubit/registration_form_cubit.dart';
-import 'package:chat_app/Network/firebase_storage_service.dart';
+
 import 'package:chat_app/Widgets/info_tile.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -48,56 +47,6 @@ class _ConfirmationLayoutState extends ConsumerState<ConfirmationLayout> {
               //     }
               //   },
 
-              //   // onPressed: () async {
-              //   //   // final appDocDir = await getApplicationDocumentsDirectory();
-              //   //   imagePath = avatar!.path;
-
-              //   //   final file = File(imagePath);
-
-              //   //   // Create the file metadata
-              //   //   // final metadata = SettableMetadata(contentType: "image/jpeg");
-
-              //   //   // Create a reference to the Firebase Storage bucket
-              //   //   final storageRef = FirebaseStorage.instance.ref();
-
-              //   //   // Upload file and metadata to the path 'images/mountains.jpg'
-              //   //   final uploadTask =
-              //   //       storageRef.child("Images/${avatar!.name}").putFile(file);
-
-              //   //   // Listen for state changes, errors, and completion of the upload.
-              //   //   uploadTask.snapshotEvents.listen(
-              //   //     (TaskSnapshot taskSnapshot) {
-              //   //       switch (taskSnapshot.state) {
-              //   //         case TaskState.running:
-              //   //           final progress = 100.0 *
-              //   //               (taskSnapshot.bytesTransferred /
-              //   //                   taskSnapshot.totalBytes);
-              //   //           print("Upload is $progress% complete.");
-              //   //           break;
-              //   //         case TaskState.paused:
-              //   //           print("Upload is paused.");
-              //   //           break;
-              //   //         case TaskState.canceled:
-              //   //           print("Upload was canceled");
-              //   //           break;
-              //   //         case TaskState.error:
-              //   //           // Handle unsuccessful uploads
-              //   //           break;
-              //   //         case TaskState.success:
-              //   //           // Handle successful uploads on complete
-              //   //           // ...
-              //   //           break;
-              //   //       }
-              //   //     },
-              //   //   );
-
-              //   //   // context.read<RegistrationFormCubit>().previousStep(
-              //   //   //       state.username,
-              //   //   //       state.firstname,
-              //   //   //       state.lastname,
-              //   //   //       state.phone,
-              //   //   //     );
-              //   // },
               // ),
               GestureDetector(
                 onTap: () async {

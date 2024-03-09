@@ -41,3 +41,24 @@ void requestPermission() async {
 }
 
 late bool hasConnection;
+
+// ENDPOINTS //
+
+// static const baseUrl = 'http://127.0.0.1:5000';
+// ! Phone IP adresse
+const baseUrl = 'http://172.20.10.5:5000';
+// ! Mauritel
+// static const baseUrl = 'http://192.168.100.30:5000';
+// ! Sahel
+// static const baseUrl = 'http://192.168.0.103:5000';
+// static const baseUrl = 'http://192.168.1.212:5000';
+const loginUrl = '$baseUrl/api/login';
+const registerUrl = '$baseUrl/api/register';
+const getConvos = '$baseUrl/api/getConvos';
+const getBlogs = '$baseUrl/api/getBlogs';
+const createConvo = '$baseUrl/api/createConversation';
+const deleteAccount = '$baseUrl/api/deleteAccount';
+const editPhoneNumber = '$baseUrl/api/editPhone';
+const deleteConvo = '$baseUrl/api/deleteConversation';
+const seenMessage = '$baseUrl/api/seen';
+const editProfilePhoto = '$baseUrl/api/editPhoto';

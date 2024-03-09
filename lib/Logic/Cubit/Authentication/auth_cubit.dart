@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
+import 'package:chat_app/Constants/constants.dart';
 import 'package:chat_app/Network/firebase_storage_service.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
@@ -60,6 +61,7 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
 
     try {
       final response = await NetworkServices().editPhone(phone);
+      logger.f('response: $response');
       log('Success response ${response.firstname}');
 
       emit(RegisteredUser(response));
@@ -80,24 +82,39 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     }
   }
 
-  Future<void> editPhoto(String url, XFile? newAvatar) async {
+  void editProfilePhoto(File imageFile, BuildContext context) async {
     emit(AuthenticationLoading());
+
+    await Future.delayed(const Duration(seconds: 2));
+
+    // log('Phone request: $phone');
+
     SharedPreferences preferences = await SharedPreferences.getInstance();
     final storedUser = preferences.getString('user');
+
     final json = jsonDecode(storedUser!);
-    final model = UserModel.fromJson(json['user']);
-    // print('before try');
+    final user = UserModel.fromJson(json['user']);
+
     try {
-      final newPhoto = await NetworkServices().editAvatar(newAvatar, url);
-      model.avatar = newPhoto;
+      final response = await NetworkServices().editPhoto(imageFile);
+      logger.f('response: $response');
+      log('Success response ${response.firstname}');
 
-      preferences.setString('user', model.toString());
+      emit(RegisteredUser(response));
+      if (context.mounted) {
+        Navigator.of(context).pop();
 
-      emit(RegisteredUser(model));
-
-      // model.avatar = newAvatar.
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Successfully updated')));
+      }
     } catch (e) {
-      emit(AuthenticationError(e.toString()));
+      log(e.toString());
+      emit(RegisteredUser(user));
+      if (context.mounted) {
+        Navigator.of(context).pop();
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(e.toString())));
+      }
     }
   }
 

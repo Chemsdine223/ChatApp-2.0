@@ -6,7 +6,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
-import 'package:chat_app/Constants/constants.dart';
 import 'package:chat_app/Logic/Cubit/OnlineStatusCubit/online_status_cubit.dart';
 import 'package:chat_app/Network/network_services.dart';
 import 'package:chat_app/Providers/provider.dart';
@@ -156,39 +155,31 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                           ],
                         ),
                         child: ListTile(
-                          trailing: BlocBuilder<ConversationsCubit,
-                              ConversationsState>(
-                            builder: (context, state) {
-                              if (state is ConversationsLoaded) {
-                                return state.conversations[index].messages
-                                        .where((message) =>
-                                            message.isSeen == false &&
-                                            message.receiver.id ==
-                                                NetworkServices.id)
+                          trailing: state.conversations[index].messages
+                                  .where((message) =>
+                                      message.isSeen == false &&
+                                      message.receiver.id == NetworkServices.id)
+                                  .toList()
+                                  .isEmpty
+                              ? const Text('')
+                              : CircleAvatar(
+                                  radius: 12,
+                                  backgroundColor: Colors.blueAccent,
+                                  child: Text(
+                                    state.conversations[index].messages
+                                        .where(
+                                          (message) =>
+                                              message.isSeen == false &&
+                                              message.receiver.id ==
+                                                  NetworkServices.id,
+                                        )
                                         .toList()
-                                        .isEmpty
-                                    ? const Text('')
-                                    : CircleAvatar(
-                                        radius: 12,
-                                        backgroundColor: Colors.blueAccent,
-                                        child: Text(
-                                          state.conversations[index].messages
-                                              .where((message) =>
-                                                  message.isSeen == false &&
-                                                  message.receiver.id ==
-                                                      NetworkServices.id)
-                                              .toList()
-                                              .length
-                                              .toString(),
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodySmall,
-                                        ),
-                                      );
-                              }
-                              return const Text('not yet');
-                            },
-                          ),
+                                        .length
+                                        .toString(),
+                                    style:
+                                        Theme.of(context).textTheme.bodySmall,
+                                  ),
+                                ),
                           leading: SizedBox(
                             height: 40,
                             width: 40,

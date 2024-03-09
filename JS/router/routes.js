@@ -10,6 +10,7 @@ const { editPhone } = require("../Controllers/editPhone");
 const { sendNotification } = require("../Controllers/sendNotification");
 const { seenStatus } = require("../Controllers/seen");
 const { deleteConversation } = require("../Controllers/deleteConversation");
+const { editPhoto } = require("../Controllers/editProfile");
 const router = express.Router();
 
 router.route("/register").post(register);
@@ -22,6 +23,7 @@ router.route("/getConvos").get(verifyToken, getConversations);
 router.route("/createConversation").post(verifyToken, createConversation);
 router.route("/deleteAccount").post(verifyToken, deleteAccount);
 router.route("/editPhone").put(verifyToken, editPhone);
+router.route("/editPhoto").put(verifyToken, editPhoto);
 router.route("/send").post(sendNotification);
 router.route("/seen").post(verifyToken,seenStatus);
 router.route("/deleteConversation").post(deleteConversation);

@@ -32,11 +32,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  await Supabase.initialize(
-    url: 'https://qrxbuwdzlubqpatmpjew.supabase.co',
-    anonKey:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFyeGJ1d2R6bHVicXBhdG1wamV3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDc3NDY1MjUsImV4cCI6MjAyMzMyMjUyNX0.nzDWnr2uKG4Oprl3zv1yhqLrh_BA3TrisNP2Kc1Xqv8',
-  );
+
   await Prefs.init();
 
   requestPermission();
@@ -48,12 +44,12 @@ void main() async {
 
   FirebaseMessaging.onMessage.listen(
     (RemoteMessage message) {
-      print('Got a message whilst in the foreground!');
-      print('Message data: ${message.data}');
+      // print('Got a message whilst in the foreground!');
+      // print('Message data: ${message.data}');
 
       if (message.notification != null) {
-        print(
-            'Message also contained a notification: ${message.notification!.title!}');
+        // print(
+        //     'Message also contained a notification: ${message.notification!.title!}');
       }
     },
   );
