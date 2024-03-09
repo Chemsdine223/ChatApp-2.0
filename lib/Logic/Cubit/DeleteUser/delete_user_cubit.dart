@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../Constants/constants.dart';
-import '../../Network/network_services.dart';
+import '../../../Network/network_services.dart';
 
 part 'delete_user_state.dart';
 

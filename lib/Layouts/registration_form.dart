@@ -38,10 +38,13 @@ class _RegistrationFormState extends State<RegistrationForm> {
                     color: Colors.grey.shade300,
                   ),
                   child: TextFormField(
+                    style: const TextStyle(color: Colors.black87),
                     initialValue: state.username,
                     cursorColor: Colors.greenAccent,
                     decoration: const InputDecoration(
+                      // color
                       hintText: 'Enter your username',
+                      hintStyle: TextStyle(color: Colors.black),
                       border: InputBorder.none,
                     ),
                     validator: (value) {
@@ -74,10 +77,15 @@ class _RegistrationFormState extends State<RegistrationForm> {
                     color: Colors.grey.shade300,
                   ),
                   child: TextFormField(
+                    keyboardType: TextInputType.number,
+                    maxLength: 8,
+                    style: const TextStyle(color: Colors.black87),
                     initialValue: state.phone,
                     cursorColor: Colors.greenAccent,
                     decoration: const InputDecoration(
+                      counterText: '',
                       hintText: 'Enter your phone',
+                      hintStyle: TextStyle(color: Colors.black),
                       border: InputBorder.none,
                     ),
                     validator: (value) {
@@ -110,10 +118,12 @@ class _RegistrationFormState extends State<RegistrationForm> {
                     color: Colors.grey.shade300,
                   ),
                   child: TextFormField(
+                    style: const TextStyle(color: Colors.black87),
                     initialValue: state.firstname,
                     cursorColor: Colors.greenAccent,
                     decoration: const InputDecoration(
                       hintText: 'Enter your firstname',
+                      hintStyle: TextStyle(color: Colors.black),
                       border: InputBorder.none,
                     ),
                     validator: (value) {
@@ -148,10 +158,12 @@ class _RegistrationFormState extends State<RegistrationForm> {
                     color: Colors.grey.shade300,
                   ),
                   child: TextFormField(
+                    style: const TextStyle(color: Colors.black87),
                     initialValue: state.lastname,
                     cursorColor: Colors.greenAccent,
                     decoration: const InputDecoration(
                       hintText: 'Enter your lastname',
+                      hintStyle: TextStyle(color: Colors.black),
                       border: InputBorder.none,
                     ),
                     validator: (value) {

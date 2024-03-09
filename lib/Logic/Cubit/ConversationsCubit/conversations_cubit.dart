@@ -6,7 +6,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
 import 'package:chat_app/Models/conversation.dart';
-import 'package:chat_app/Logic/Network/network_services.dart';
+import 'package:chat_app/Network/network_services.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 import '../../../Constants/constants.dart';
@@ -28,7 +28,7 @@ class ConversationsCubit extends Cubit<ConversationsState> {
           case InternetConnectionStatus.disconnected:
             connectionCubit.disconnected();
             getLocalConversations();
-            logger.e('You are disconnected from the internet.');
+            logger.f('You are disconnected from the internet.');
             break;
         }
       },
@@ -36,7 +36,7 @@ class ConversationsCubit extends Cubit<ConversationsState> {
   }
 
   Future<void> getConversations() async {
-    print('getting conversations');
+    logger.e('getting conversations');
     emit(ConversationsLoading());
     try {
       final response = await NetworkServices().getConversations();
@@ -61,6 +61,7 @@ class ConversationsCubit extends Cubit<ConversationsState> {
         //     'Before updating isSeen: ${sstate.conversations[existingIndex].messages[messageIndex].isSeen}');
 
         // Create a copy of the conversation and update the specific message
+        logger.e(messageIndex);
         final updatedConversation =
             sstate.conversations[existingIndex].copyWith(
           messages: List.from(sstate.conversations[existingIndex].messages)

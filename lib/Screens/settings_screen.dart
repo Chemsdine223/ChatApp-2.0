@@ -1,14 +1,17 @@
+import 'dart:io';
+
 import 'package:chat_app/Constants/constants.dart';
 import 'package:chat_app/Logic/Cubit/Authentication/auth_cubit.dart';
 import 'package:chat_app/Logic/Cubit/ConversationsCubit/conversations_cubit.dart';
 import 'package:chat_app/Logic/Cubit/DeleteUser/delete_user_cubit.dart';
 import 'package:chat_app/Theme/theme_cubit.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../Logic/Cubit/RegistrationFormCubit/registration_form_cubit.dart';
-import '../Logic/Network/network_services.dart';
+import '../Network/network_services.dart';
 import '../Widgets/custom_button.dart';
 import '../Widgets/overlay.dart';
 
@@ -21,12 +24,18 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   final picker = ImagePicker();
-  XFile? screenShot;
+  XFile? image;
   String imagePath = '';
+
+  UploadTask? uploadTask;
 
   final avatar = '';
   String usernameError = '';
   String phone = '';
+
+  bool isUploaded = false;
+  File? _image;
+  String? url;
 
   String title = 'Settings';
   bool isBottomSheetShowing = false;
@@ -121,18 +130,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                                 Container(
                                                   height: 100,
                                                   width: 100,
-                                                  decoration:
-                                                      const BoxDecoration(
+                                                  decoration: BoxDecoration(
                                                     color: Colors.grey,
                                                     shape: BoxShape.circle,
-                                                    // image: user.avatar.isEmpty
-                                                    //     ? null
-                                                    //     : DecorationImage(
-                                                    //         fit: BoxFit.fill,
-                                                    //         image: NetworkImage(
-                                                    //           user.avatar,
-                                                    //         ),
-                                                    //       ),
+                                                    image: user.avatar.isEmpty
+                                                        ? null
+                                                        : DecorationImage(
+                                                            fit: BoxFit.fill,
+                                                            image: NetworkImage(
+                                                              user.avatar,
+                                                            ),
+                                                          ),
                                                   ),
                                                   child: user.avatar.isEmpty
                                                       ? const Icon(Icons
@@ -140,46 +148,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                                       : null,
                                                 ),
                                                 SizedBox(
-                                                  // color: Colors.green,
                                                   height: 100,
                                                   width: 95,
                                                   child: Align(
                                                     alignment:
                                                         Alignment.bottomRight,
                                                     child: GestureDetector(
-                                                      onTap: () async {
-                                                        String imageUrl =
-                                                            state.user.avatar;
-                                                        logger.w(imageUrl);
-                                                        Uri uri =
-                                                            Uri.parse(imageUrl);
-
-                                                        // Extract the last path segment as the file name
-                                                        String fileName = uri
-                                                            .pathSegments.last;
-
-                                                        // Include the query (including the token) in the file name
-                                                        // String filename =
-                                                        //     '$fileName?${uri.query}';
-                                                        // print('File name:$filename');
-
-                                                        await picker
-                                                            .pickImage(
-                                                                source:
-                                                                    ImageSource
-                                                                        .gallery)
-                                                            .then((value) {
-                                                          if (value != null) {
-                                                            NetworkServices()
-                                                                .editAvatar(
-                                                                    value,
-                                                                    fileName);
-                                                          } else {
-                                                            logger
-                                                                .d('no image');
-                                                          }
-                                                        });
-                                                      },
                                                       child: const CircleAvatar(
                                                           radius: 12,
                                                           child: Icon(
@@ -283,7 +257,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                                           child: Padding(
                                                             padding:
                                                                 const EdgeInsets
-                                                                        .symmetric(
+                                                                    .symmetric(
                                                                     horizontal:
                                                                         12),
                                                             child: Column(
@@ -334,14 +308,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                                               ],
                                                             ),
                                                           ),
-                                                          // usernameError
-                                                          //         .isNotEmpty
-                                                          //     ? Text(
-                                                          //         usernameError)
-                                                          //     : Container(),
-                                                          // const SizedBox(
-                                                          //   height: 16,
-                                                          // ),
                                                         );
                                                       } else if (state
                                                           is AuthenticationLoading) {
@@ -354,7 +320,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                                 },
                                               );
                                             },
-                                            child: _customTile(
+                                            child: customTile(
                                                 const Icon(Icons
                                                     .phone_android_rounded),
                                                 'Phone number'),
@@ -364,7 +330,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                             height: 0,
                                             color: Colors.grey.shade300,
                                           ),
-                                          _customTile(
+                                          customTile(
                                               const Icon(
                                                 Icons.phone_android_rounded,
                                               ),
@@ -455,6 +421,47 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
+  Widget _buildPlaceholderImage() {
+    return const Icon(Icons.person);
+  }
+
+  Future<void> _selectImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    setState(() {
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
+
+  Future<String> _uploadImage() async {
+    if (_image == null) {
+      print('No image selected.');
+      return '';
+    }
+    isUploaded = true;
+    setState(() {
+      isUploaded = true;
+    });
+
+    String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+    Reference storageReference = FirebaseStorage.instance.ref().child(fileName);
+    UploadTask uploadTask = storageReference.putFile(_image!);
+
+    TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() => null);
+    String downloadURL = await storageReference.getDownloadURL();
+    url = downloadURL;
+    print('$downloadURL -------------------');
+    // Do something with the downloadURL, such as storing it in local storage
+
+    print('Image uploaded successfully.');
+    return downloadURL;
+  }
+
   Container buildtextField(
       BuildContext context, String initialValue, bool readOnly) {
     return Container(
@@ -492,7 +499,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Container _customTile(Icon icon, String label) {
+  Container customTile(Icon icon, String label) {
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: 6,

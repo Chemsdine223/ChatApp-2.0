@@ -11,18 +11,18 @@ import '../Constants/constants.dart';
 import '../Logic/Cubit/ConversationsCubit/conversations_cubit.dart';
 import '../Logic/Cubit/SocketCubits/socket_connection_cubit.dart';
 import '../Logic/Cubit/TypingStatusCubit/typing_status_cubit.dart';
-import '../Logic/Network/network_services.dart';
+import '../Network/network_services.dart';
 import '../Widgets/chat_bubble.dart';
 
 class ChatRoom extends ConsumerStatefulWidget {
   // final dynamic countTextState;
-  final List<String> unreadMessages;
+  // final List<String> unreadMessages;
   final String conversationId;
   final String username;
   final List<UserModel> users;
   const ChatRoom({
     Key? key,
-    required this.unreadMessages,
+    // required this.unreadMessages,
     required this.conversationId,
     required this.username,
     required this.users,
@@ -35,14 +35,14 @@ class ChatRoom extends ConsumerStatefulWidget {
 class _ChatRoomState extends ConsumerState<ChatRoom> {
   String typing = '';
 
-  @override
-  void initState() {
-    if (widget.unreadMessages.isNotEmpty) {
-      NetworkServices()
-          .updateSeenStatus(widget.unreadMessages, widget.conversationId);
-    }
-    super.initState();
-  }
+  // @override
+  // void initState() {
+  //   if (widget.unreadMessages.isNotEmpty) {
+  //     NetworkServices()
+  //         .updateSeenStatus(widget.unreadMessages, widget.conversationId);
+  //   }
+  //   super.initState();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -184,8 +184,7 @@ class _ChatRoomState extends ConsumerState<ChatRoom> {
                         List<String> unreadMessages = [];
 
                         if (message.isSeen == false &&
-                            message.receiver.id == NetworkServices.id &&
-                            widget.unreadMessages.isEmpty) {
+                            message.receiver.id == NetworkServices.id) {
                           logger.f('Here it is ');
                           unreadMessages.add(message.id);
                           NetworkServices().updateSeenStatus(
@@ -197,7 +196,7 @@ class _ChatRoomState extends ConsumerState<ChatRoom> {
                         //   NetworkServices().updateSeenStatus(
                         //       widget.unreadMessages, conversation.id);
                         // }
-                        logger.e(widget.unreadMessages.isEmpty);
+                        // logger.e(widget.unreadMessages.isEmpty);
                         // var unreadMessagesIds = [];
 
                         // unreadMessages.add(messages.where((message) => .toList());

@@ -31,7 +31,7 @@ function setupSocket(server) {
       .populate("user", "_id")
       .then((apiKeyInfo) => {
         if (!apiKeyInfo || String(apiKeyInfo.user._id) !== userId) {
-          console.log(String(apiKeyInfo.user._id));
+          // console.log(String(apiKeyInfo.user._id));
           return next(new Error("Authentication failed. User ID mismatch."));
         }
 

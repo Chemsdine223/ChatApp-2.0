@@ -1,17 +1,14 @@
 import 'dart:developer';
 
-import 'package:chat_app/Logic/Cubit/CounterCubit/counter_cubit.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:chat_app/Widgets/avatar_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:chat_app/Constants/constants.dart';
 import 'package:chat_app/Logic/Cubit/OnlineStatusCubit/online_status_cubit.dart';
-import 'package:chat_app/Logic/Network/network_services.dart';
-import 'package:chat_app/Models/conversation.dart';
+import 'package:chat_app/Network/network_services.dart';
 import 'package:chat_app/Providers/provider.dart';
 import 'package:chat_app/Screens/chat_room.dart';
 import 'package:chat_app/Screens/contacts_screen.dart';
@@ -28,14 +25,6 @@ class ChatScreen extends ConsumerStatefulWidget {
 }
 
 class _ChatScreenState extends ConsumerState<ChatScreen> {
-  // @override
-  // void dispose() {
-  //   logger.d('Disposed');
-  //   super.dispose();
-  // }
-
-  // _CountTextState? countTextState;
-  // void resetCounter() {}
   @override
   Widget build(BuildContext context) {
     ref.watch(provider.providerOfSocket);
@@ -85,7 +74,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                         'ChatApp',
                         style: TextStyle(shadows: [
                           BoxShadow(
-                            // blurRadius: .5,
                             color: Colors.black38,
                             offset: Offset(1, .5),
                           )
@@ -122,66 +110,34 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       body: Center(
         child: BlocBuilder<ConversationsCubit, ConversationsState>(
           builder: (context, state) {
-            logger.d(state);
+            // logger.d(state);
             if (state is ConversationsLoading) {
               return const Center(
                 child: CircularProgressIndicator(),
               );
             } else if (state is ConversationsLoaded) {
-              // context.watch<ConversationsCubit>().state;
               log(state.conversations.length.toString());
               if (state.conversations.isEmpty) {
                 return const Center(
                   child: Text('No conversations yet'),
                 );
               }
-              // conversations = state.conversations;
-              // print('convos: ${state.conversations.length}');
               return SafeArea(
                 child: SlidableAutoCloseBehavior(
                   child: ListView.builder(
                     itemCount: state.conversations.length,
                     itemBuilder: (context, index) {
-                      List<String> unreadMessages = [];
-
-                      // for (var element in state.conversations[index].messages) {
-                      //   logger.t('working');
-                      //   if (element.isSeen == false &&
-                      //       element.conversationId ==
-                      //           state.conversations[index].id) {
-                      //     unreadMessages.add(element.id);
-                      //   }
-                      //   // return ;
-                      // }
-
-                      // logger.f('Unread messages: ${unreadMessages.length}');
-                      // unreadMessages.add(state.conversations[index].messages
-                      //     .where((message) =>
-                      //         message.isSeen == false &&
-                      //         message.receiver.id == NetworkServices.id)
-                      //     .toList());
-
                       final conversation = state.conversations[index];
                       final otherUser =
                           state.conversations[index].users[0].id ==
                                   NetworkServices.id
                               ? state.conversations[index].users[1]
                               : state.conversations[index].users[0];
-
-                      // print(state.conversations[index].messages.last.content);
                       return Slidable(
                         endActionPane: ActionPane(
                           key: ValueKey(index),
-
-                          // A motion is a widget used to control how the pane animates.
                           motion: const StretchMotion(),
-
-                          // A pane can dismiss the Slidable.
-                          // dismissible: DismissiblePane(onDismissed: () {}),
-
-                          // All actions are defined in the children parameter.
                           children: [
-                            // A SlidableAction can have an icon and/or a label.
                             SlidableAction(
                               onPressed: (context) {
                                 context
@@ -197,21 +153,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                               icon: Icons.delete,
                               label: 'Delete',
                             ),
-                            // SlidableAction(
-                            //   // flex: 2,
-                            //   onPressed: (context) {},
-                            //   backgroundColor: const Color(0xFF21B7CA),
-                            //   foregroundColor: Colors.white,
-                            //   icon: Icons.share,
-                            //   label: 'Share',
-                            // ),
                           ],
                         ),
                         child: ListTile(
                           trailing: BlocBuilder<ConversationsCubit,
                               ConversationsState>(
                             builder: (context, state) {
-                              log(state.toString());
                               if (state is ConversationsLoaded) {
                                 return state.conversations[index].messages
                                         .where((message) =>
@@ -242,44 +189,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                               return const Text('not yet');
                             },
                           ),
-                          // trailing: CountText(
-                          //   conversation: conversation,
-                          //   // onResetCount: (childState) {
-                          //   //   // Receive the child widget state
-                          //   //   // countTextState = childState;
-                          //   // },
-                          // ),
-
-                          // tileColor: Theme.of(context).disabledColor,
-                          // trailing:
-                          //     BlocBuilder<TypingStatusCubit, TypingStatusState>(
-                          //   builder: (context, state) {
-                          //     // if (state is Typing) {
-                          //     final typingUserId =
-                          //         state.typingStatusMap[conversation.id];
-                          //     return Text(
-                          //         typingUserId != null ? ' is typing...' : '');
-                          //     // }
-                          //     // return const Text('');
-                          //   },
-                          // ),
                           leading: SizedBox(
                             height: 40,
                             width: 40,
-                            // color: Colors.red,
                             child: Stack(
                               children: [
-                                CircleAvatar(
-                                  // backgroundImage: otherUser.avatar.isEmpty
-                                  //     ? null
-                                  //     : NetworkImage(
-                                  //         otherUser.avatar,
-                                  //       ),
-                                  backgroundColor: Colors.grey.shade300,
-                                  child: otherUser.avatar.isEmpty
-                                      ? const Icon(Icons.person_2_rounded)
-                                      : null,
-                                ),
+                                AvatarImage(image: otherUser.avatar),
                                 Align(
                                   alignment: Alignment.bottomRight,
                                   child: BlocBuilder<OnlineStatusCubit,
@@ -294,22 +209,16 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                                                 )
                                                 .toList();
 
-                                        return Icon(
-                                          Icons.circle,
-                                          color: stringList.contains(
-                                            (conversation.users[0].id ==
-                                                    NetworkServices.id
-                                                ? conversation.users[1].id
-                                                : conversation.users[0].id),
-                                          )
-                                              ? Colors.green
-                                              : Colors.grey.shade600,
-                                          size: 12,
-                                          // style: TextStyle(
-                                          //   color: Colors.grey.shade400,
-                                          //   fontSize: 12,
-                                          // ),
-                                        );
+                                        return Icon(Icons.circle,
+                                            color: stringList.contains(
+                                              (conversation.users[0].id ==
+                                                      NetworkServices.id
+                                                  ? conversation.users[1].id
+                                                  : conversation.users[0].id),
+                                            )
+                                                ? Colors.green
+                                                : Colors.grey.shade600,
+                                            size: 12);
                                       }
                                       return const Text('Unknown');
                                     },
@@ -319,12 +228,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                             ),
                           ),
                           onTap: () {
-                            // logger.f(unreadMessages.first);
                             Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => ChatRoom(
-                                  unreadMessages: unreadMessages,
                                   conversationId: state.conversations[index].id,
                                   username:
                                       state.conversations[index].users[0].id ==
@@ -337,10 +244,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                                 ),
                               ),
                             );
-
-                            // countTextState?.resetCount();
-
-                            // print(state.conversations[index].id);
                           },
                           title: Text(
                             state.conversations[index].users[0].id ==
@@ -365,121 +268,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                   ),
                 ),
               );
+            } else if (state is ConversationsError) {
+              return Text(state.errorMessage);
             }
-
-            // else {
             return Text(state.toString());
-            // }
           },
         ),
       ),
     );
-  }
-}
-
-class CountText extends StatefulWidget {
-  final Conversation conversation;
-  // final Function(_CountTextState?) onResetCount;
-
-  const CountText({
-    Key? key,
-    required this.conversation,
-    // required this.onResetCount,
-  }) : super(key: key);
-
-  @override
-  State<CountText> createState() => _CountTextState();
-}
-
-class _CountTextState extends State<CountText> {
-  Future<String> getConversationCount(String id) async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-
-    String count = preferences.getString(id) ?? '';
-
-    return count;
-  }
-
-  Future<void> setCount(String id, String count) async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-
-    preferences.setString(id, count);
-
-    logger.w('Count to set: $count');
-  }
-
-  resetCount() {
-    setState(() {
-      count = 0;
-      setCount(widget.conversation.id, '0');
-    });
-  }
-
-  @override
-  void initState() {
-    // widget.onResetCount(this);
-    getConversationCount(widget.conversation.id).then((value) {
-      if (value != '') {
-        setState(() {
-          count = int.parse(value);
-        });
-        logger.f('initial count $value');
-      }
-    });
-
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      logger.w('message: $message');
-      if (message.notification != null) {
-        print(
-            'Message also contained a notification: ${message.notification!.title!}');
-        logger.e('conversation id is: ${widget.conversation.id} ');
-
-        logger.e(message.data);
-        if (message.data['conversationId'] == widget.conversation.id) {
-          logger.f('count is: $count');
-
-          context.read<CounterCubit>().addNotification();
-
-          // setState(() {
-          //   count++;
-          //   setCount(widget.conversation.id, count.toString());
-          // });
-        }
-      }
-    });
-    super.initState();
-  }
-
-  int count = 0;
-  @override
-  Widget build(BuildContext context) {
-    // BlocProvider.of<CounterCubit>(context, listen: true);
-
-    final stateWatch = BlocProvider.of<CounterCubit>(context, listen: true);
-    return 3 != 0
-        ? GestureDetector(
-            onTap: () {
-              context.read<CounterCubit>().addNotification();
-            },
-            child: BlocBuilder<CounterCubit, int>(
-              builder: (context, state) {
-                print(stateWatch.state);
-                return CircleAvatar(
-                  radius: 12,
-                  child: Text(
-                    state.toString(),
-                    style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                        ),
-                  ),
-                );
-              },
-            ),
-          )
-        : const SizedBox(
-            height: 4,
-            width: 4,
-          );
   }
 }

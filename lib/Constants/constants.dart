@@ -6,7 +6,7 @@ import '../Logic/Cubit/ConversationsCubit/conversations_cubit.dart';
 import '../Logic/Cubit/OnlineStatusCubit/online_status_cubit.dart';
 import '../Logic/Cubit/SocketCubits/socket_connection_cubit.dart';
 import '../Logic/Cubit/TypingStatusCubit/typing_status_cubit.dart';
-import '../Logic/Network/socket_service.dart';
+import '../Network/socket_service.dart';
 import '../Theme/theme_cubit.dart';
 
 final supabase = Supabase.instance.client;
@@ -39,3 +39,5 @@ void requestPermission() async {
 
   print('User granted permission: ${settings.authorizationStatus}');
 }
+
+late bool hasConnection;

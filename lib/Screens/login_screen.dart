@@ -4,6 +4,7 @@ import 'package:chat_app/Layouts/confirmation_form.dart';
 import 'package:chat_app/Layouts/registration_form.dart';
 import 'package:chat_app/Logic/Cubit/Authentication/auth_cubit.dart';
 import 'package:chat_app/Logic/Cubit/RegistrationFormCubit/registration_form_cubit.dart';
+import 'package:chat_app/Widgets/overlay.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -23,24 +24,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   XFile? screenShot;
   String imagePath = '';
 
-  // final sr = SocketService();
-
-  // @override
-  // void initState() {
-  //   SocketService().disconnectSocket();
-  //   super.initState();
-  // }
-
-  // int currentState = 0;
-
   @override
   Widget build(BuildContext context) {
     ref.watch(provider.providerOfSocket);
-
-    // ref.watch(provider);
-    // final prov = ref.watch(streamRepositoryProvider);
-    // print(prov);
-
     return BlocBuilder<AuthenticationCubit, AuthenticationState>(
       builder: (context, state) {
         return Stack(
@@ -79,7 +65,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ),
               ),
             ),
-            state is AuthenticationLoading ? const Overlay() : Container(),
+            state is AuthenticationLoading ? const OverLay() : Container(),
           ],
         );
       },

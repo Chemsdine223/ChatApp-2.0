@@ -4,7 +4,9 @@ import 'dart:io';
 
 import 'package:chat_app/Logic/Offline/offline_conversations.dart';
 import 'package:chat_app/Logic/Offline/shared_preferences_service.dart';
+import 'package:chat_app/Network/firebase_storage_service.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,7 +15,7 @@ import 'package:chat_app/Models/user.dart';
 import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../Constants/constants.dart';
+import '../Constants/constants.dart';
 // import '';
 
 // import 'package:chat_app/Logic/Network/socket_service.dart';
@@ -25,7 +27,7 @@ class NetworkServices {
   // ! Mauritel
   // static const baseUrl = 'http://192.168.100.30:5000';
   // ! Sahel
-  // static const baseUrl = 'http://192.168.0.113:5000';
+  // static const baseUrl = 'http://192.168.0.103:5000';
   // static const baseUrl = 'http://192.168.1.212:5000';
   final loginUrl = '$baseUrl/api/login';
   final registerUrl = '$baseUrl/api/register';
@@ -81,9 +83,13 @@ class NetworkServices {
     String firstname,
     String lastname,
     String phone,
-    // String avatar,
+    String avatar,
   ) async {
     final fcmToken = await FirebaseMessaging.instance.getToken();
+
+    logger.e(fcmToken);
+    logger.e('avatar: $avatar');
+
     final response = await http.post(
       headers: {'Content-Type': 'application/json'},
       Uri.parse(registerUrl),
@@ -93,6 +99,7 @@ class NetworkServices {
         "lastname": lastname,
         "phone": phone,
         "token": fcmToken,
+        "avatar": avatar,
       }),
     );
     final data = jsonDecode(response.body);
@@ -216,7 +223,11 @@ class NetworkServices {
     ).timeout(
       const Duration(seconds: 20),
       onTimeout: () {
-        return http.Response('Connection timeout', 408);
+        return http.Response(
+            jsonEncode({
+              'message': 'Connection timeout',
+            }),
+            408);
       },
     );
 
@@ -321,6 +332,33 @@ class NetworkServices {
     }
   }
 
+  Future<String> uploadImage(File file) async {
+    // Directory appDocDir = await getApplicationDocumentsDirectory();
+
+    // if (_image == null) {
+    //   print('No image selected.');
+    //   return '';
+    // }
+    // isUploaded = true;
+    // setState(() {
+    //   isUploaded = true;
+    // });
+
+    String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+    Reference storageReference = FirebaseStorage.instance.ref().child(fileName);
+    UploadTask uploadTask = storageReference.putFile(file);
+
+    TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() => null);
+    String downloadURL = await storageReference.getDownloadURL();
+
+    // url = downloadURL;
+    print('$downloadURL -------------------');
+    // Do something with the downloadURL, such as storing it in local storage
+
+    print('Image uploaded successfully.');
+    return downloadURL;
+  }
+
   Future<bool> deleteUser() async {
     final response = await http.post(
       Uri.parse(deleteAccount),
@@ -345,6 +383,7 @@ class NetworkServices {
   }
 
   Future<bool> deleteConversation(String userId, String conversationId) async {
+    await loadTokens();
     final res = await http.post(Uri.parse(deleteConvo),
         headers: {
           'Content-Type': 'application/json',

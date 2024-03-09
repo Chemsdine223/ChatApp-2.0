@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_contacts/contact.dart';
-import 'package:chat_app/Logic/Network/network_services.dart';
+import 'package:chat_app/Network/network_services.dart';
 
 part 'contact_state.dart';
 

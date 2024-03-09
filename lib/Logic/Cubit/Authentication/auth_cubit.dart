@@ -1,13 +1,15 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:bloc/bloc.dart';
+import 'package:chat_app/Network/firebase_storage_service.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:chat_app/Logic/Network/network_services.dart';
+import 'package:chat_app/Network/network_services.dart';
 import 'package:chat_app/Models/user.dart';
 
 part 'auth_cubit_state.dart';
@@ -111,19 +113,19 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     String firstname,
     String lastname,
     String phone,
-    // XFile? avatar,
+    File file,
   ) async {
     emit(AuthenticationLoading());
     await Future.delayed(const Duration(seconds: 5));
     try {
-      // final String avatarUrl = await NetworkServices().uploadAvatar(avatar);
+      final avatar = await FirebaseStorageService.uploadImageToFirebase(
+          file, DateTime.now().toString());
       final response = await NetworkServices().register(
         username,
         firstname,
         lastname,
         phone,
-        // avatarUrl,
-        // 'avatarUrl',
+        avatar,
       );
 
       emit(RegisteredUser(response));

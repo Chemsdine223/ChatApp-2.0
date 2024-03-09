@@ -1,12 +1,13 @@
 import 'dart:developer';
 
 // import 'package:chat_app/Providers/observers.dart';
-import 'package:chat_app/Logic/Cubit/CounterCubit/counter_cubit.dart';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:chat_app/Theme/theme_cubit.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -16,7 +17,7 @@ import 'Logic/Cubit/Authentication/auth_cubit.dart';
 import 'Logic/Cubit/ContactCubit/contact_cubit.dart';
 import 'Logic/Cubit/DeleteUser/delete_user_cubit.dart';
 import 'Logic/Cubit/RegistrationFormCubit/registration_form_cubit.dart';
-import 'Logic/Network/network_services.dart';
+import 'Network/network_services.dart';
 
 import 'Logic/Offline/shared_preferences_service.dart';
 import 'Providers/provider.dart';
@@ -45,13 +46,27 @@ void main() async {
   final t = await FirebaseMessaging.instance.getToken();
   logger.e(t);
 
-  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    print('Got a message whilst in the foreground!');
-    print('Message data: ${message.data}');
+  FirebaseMessaging.onMessage.listen(
+    (RemoteMessage message) {
+      print('Got a message whilst in the foreground!');
+      print('Message data: ${message.data}');
 
-    if (message.notification != null) {
-      print(
-          'Message also contained a notification: ${message.notification!.title!}');
+      if (message.notification != null) {
+        print(
+            'Message also contained a notification: ${message.notification!.title!}');
+      }
+    },
+  );
+
+  InternetConnectionChecker().onStatusChange.listen((status) {
+    switch (status) {
+      case InternetConnectionStatus.connected:
+        hasConnection = true;
+        break;
+      case InternetConnectionStatus.disconnected:
+        hasConnection = false;
+      default:
+        hasConnection = false;
     }
   });
 
@@ -94,9 +109,6 @@ class MyApp extends ConsumerWidget {
       providers: [
         BlocProvider(
           create: (context) => themeCubit,
-        ),
-        BlocProvider(
-          create: (context) => CounterCubit(),
         ),
         BlocProvider(
           create: (context) => AuthenticationCubit(),
