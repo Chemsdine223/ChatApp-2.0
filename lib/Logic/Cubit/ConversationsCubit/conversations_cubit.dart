@@ -44,8 +44,12 @@ class ConversationsCubit extends Cubit<ConversationsState> {
         conversations: response,
       ));
     } catch (e) {
-      logger.e(e);
-      emit(ConversationsError(errorMessage: e.toString()));
+      getLocalConversations();
+      // if () {
+
+      // }
+      // logger.e(e);
+      // emit(ConversationsError(errorMessage: e.toString()));
     }
   }
 
@@ -117,21 +121,22 @@ class ConversationsCubit extends Cubit<ConversationsState> {
 
   createConversation(List<Conversation> conversations, String phone,
       BuildContext context) async {
+    emit(ConversationsLoading());
     try {
       final conversation = await NetworkServices().newChat(phone);
       conversations.add(conversation);
-      emit(ConversationsLoaded(
-        conversations: conversations,
-      ));
+      emit(ConversationsLoaded(conversations: conversations));
+      if (context.mounted) {
+        Navigator.pop(context);
+      }
       // log('Hi');
     } catch (e) {
       if (context.mounted) {
+        Navigator.pop(context);
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text(e.toString())));
       }
-      emit(ConversationsLoaded(
-        conversations: conversations,
-      ));
+      emit(ConversationsLoaded(conversations: conversations));
     }
   }
 

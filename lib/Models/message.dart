@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+// import 'package:chat_app/Constants/constants.dart';
 import 'package:chat_app/Models/user.dart';
 
 class Message {
@@ -9,6 +10,8 @@ class Message {
   final bool isSeen;
   final UserModel sender;
   final UserModel receiver;
+  final String createdAt;
+  // final String content;
 
   Message({
     required this.id,
@@ -17,10 +20,11 @@ class Message {
     required this.isSeen,
     required this.sender,
     required this.receiver,
+    required this.createdAt,
   });
 
   factory Message.fromJson(Map<String, dynamic> json) {
-    // logger.f(json);
+    // logger.f(json['createdAt']);
     return Message(
       id: json['_id'],
       conversationId: json['room'],
@@ -28,6 +32,7 @@ class Message {
       content: json['content'],
       sender: UserModel.fromJson(json['sender'] ?? json['user'] ?? {}),
       receiver: UserModel.fromJson(json['receiver'] ?? json['user'] ?? {}),
+      createdAt: json['createdAt'],
     );
   }
 
@@ -46,6 +51,7 @@ class Message {
       isSeen: isSeen ?? this.isSeen,
       sender: sender ?? this.sender,
       receiver: receiver ?? this.receiver,
+      createdAt: '',
     );
   }
 
@@ -70,6 +76,7 @@ class Message {
       isSeen: map['isSeen'] ?? false,
       sender: UserModel.fromMap(map['sender']),
       receiver: UserModel.fromMap(map['receiver']),
+      createdAt: map['createdAt'] ?? '',
     );
   }
 

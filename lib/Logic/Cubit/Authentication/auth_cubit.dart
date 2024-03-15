@@ -7,7 +7,7 @@ import 'package:chat_app/Constants/constants.dart';
 import 'package:chat_app/Network/firebase_storage_service.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:chat_app/Network/network_services.dart';

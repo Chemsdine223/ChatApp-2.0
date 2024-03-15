@@ -37,7 +37,7 @@ void requestPermission() async {
     sound: true,
   );
 
-  print('User granted permission: ${settings.authorizationStatus}');
+  logger.d('User granted permission: ${settings.authorizationStatus}');
 }
 
 late bool hasConnection;
@@ -48,10 +48,10 @@ late bool hasConnection;
 // ! Phone IP adresse
 const baseUrl = 'http://172.20.10.5:5000';
 // ! Mauritel
-// static const baseUrl = 'http://192.168.100.30:5000';
+// const baseUrl = 'http://192.168.100.30:5000';
 // ! Sahel
-// static const baseUrl = 'http://192.168.0.103:5000';
-// static const baseUrl = 'http://192.168.1.212:5000';
+// const baseUrl = 'http://192.168.0.114:5000';
+// const baseUrl = 'http://192.168.1.212:5000';
 const loginUrl = '$baseUrl/api/login';
 const registerUrl = '$baseUrl/api/register';
 const getConvos = '$baseUrl/api/getConvos';

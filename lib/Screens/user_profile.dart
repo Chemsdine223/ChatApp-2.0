@@ -1,4 +1,5 @@
 import 'package:chat_app/Models/user.dart';
+import 'package:chat_app/Widgets/avatar_image.dart';
 import 'package:flutter/material.dart';
 
 class UserProfile extends StatefulWidget {
@@ -27,14 +28,16 @@ class _UserProfileState extends State<UserProfile>
         child: Column(
           // mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const SizedBox(
-              height: 16,
-            ),
-            CircleAvatar(
+            const SizedBox(height: 16),
+            AvatarImage(
               radius: 46,
-              backgroundColor: Theme.of(context).primaryColor,
-              child: const Icon(Icons.person_rounded),
+              image: widget.userModel.avatar,
             ),
+            // CircleAvatar(
+            //   radius: 46,
+            //   backgroundColor: Theme.of(context).primaryColor,
+            //   child: const Icon(Icons.person_rounded),
+            // ),
             const SizedBox(height: 8),
             Center(
               child: Text(

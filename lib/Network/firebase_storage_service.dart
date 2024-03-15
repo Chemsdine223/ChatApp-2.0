@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:chat_app/Constants/constants.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 class FirebaseStorageService {
@@ -18,7 +19,7 @@ class FirebaseStorageService {
 
       return downloadURL;
     } catch (e) {
-      print("Error uploading image: $e");
+      logger.d("Error uploading image: $e");
       // Handle the error as needed
       return ''; // or throw an exception
     }

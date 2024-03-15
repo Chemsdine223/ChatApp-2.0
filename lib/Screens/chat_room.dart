@@ -1,3 +1,4 @@
+import 'package:chat_app/Widgets/avatar_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -66,6 +67,7 @@ class _ChatRoomState extends ConsumerState<ChatRoom> {
 
               return BlocListener<TypingStatusCubit, TypingStatusState>(
                 listener: (context, state) {
+                  // print(state);
                   final typingUserId =
                       state.typingStatusMap[widget.conversationId];
                   typingUserId != null ? ' is typing...' : '';
@@ -83,14 +85,20 @@ class _ChatRoomState extends ConsumerState<ChatRoom> {
                           ),
                         ));
                   },
-                  leading: const CircleAvatar(
-                    // backgroundImage: NetworkImage(
-                    //   widget.users[0].id == NetworkServices.id
-                    //       ? widget.users[1].avatar
-                    //       : widget.users[0].avatar,
-                    // ),
-                    backgroundColor: Colors.green,
+                  leading: AvatarImage(
+                    image: widget.users[0].id == NetworkServices.id
+                        ? widget.users[1].avatar
+                        : widget.users[0].avatar,
                   ),
+                  // leading: const CircleAvatar(
+
+                  //   // backgroundImage: NetworkImage(
+                  //   //   widget.users[0].id == NetworkServices.id
+                  //   //       ? widget.users[1].avatar
+                  //   //       : widget.users[0].avatar,
+                  //   // ),
+                  //   backgroundColor: Colors.green,
+                  // ),
                   title: Text(widget.username),
                   subtitle: BlocBuilder<OnlineStatusCubit, OnlineStatusState>(
                     builder: (context, state) {
@@ -164,6 +172,10 @@ class _ChatRoomState extends ConsumerState<ChatRoom> {
             if (state is ConversationsLoaded) {
               final conversation = state.conversations.firstWhere(
                   (conversation) => conversation.id == widget.conversationId);
+              logger.e(conversation.id);
+
+              logger.f(
+                  'Conversations: ${conversation.id} ${widget.conversationId}');
 
               return Column(
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -180,6 +192,8 @@ class _ChatRoomState extends ConsumerState<ChatRoom> {
                         final messages =
                             conversation.messages.reversed.toList();
                         final message = messages[index];
+
+                        logger.f(message.createdAt);
 
                         List<String> unreadMessages = [];
 
@@ -246,14 +260,25 @@ class _ChatRoomState extends ConsumerState<ChatRoom> {
                                 width: 10,
                                 child: TextField(
                                   onChanged: (value) {
-                                    socketService.sendTypingStatus({
-                                      "id": widget.users[0].id ==
-                                              NetworkServices.id
-                                          ? widget.users[1].id
-                                          : widget.users[0].id,
-                                      "sender": NetworkServices.id,
-                                      "conversationId": widget.conversationId
-                                    });
+                                    if (value.isEmpty) {
+                                      socketService.sendStoppedTypingStatus({
+                                        "id": widget.users[0].id ==
+                                                NetworkServices.id
+                                            ? widget.users[1].id
+                                            : widget.users[0].id,
+                                        "sender": NetworkServices.id,
+                                        "conversationId": widget.conversationId
+                                      });
+                                    } else {
+                                      socketService.sendTypingStatus({
+                                        "id": widget.users[0].id ==
+                                                NetworkServices.id
+                                            ? widget.users[1].id
+                                            : widget.users[0].id,
+                                        "sender": NetworkServices.id,
+                                        "conversationId": widget.conversationId
+                                      });
+                                    }
                                   },
                                   cursorHeight: 16,
                                   style: const TextStyle(color: Colors.white),
@@ -271,22 +296,24 @@ class _ChatRoomState extends ConsumerState<ChatRoom> {
                             ),
                             InkWell(
                               onTap: () {
-                                // print('object');
-
-                                socketService.sendMessage(
-                                  {
-                                    "content": message0.text,
-                                    "sender": {
-                                      "username": widget.users[0].id ==
-                                              NetworkServices.id
-                                          ? widget.users[0].username
-                                          : widget.users[1].username,
-                                      "id": widget.conversationId
+                                if (message0.text.isNotEmpty) {
+                                  socketService.sendMessage(
+                                    {
+                                      "content": message0.text,
+                                      "sender": {
+                                        "username": widget.users[0].id ==
+                                                NetworkServices.id
+                                            ? widget.users[0].username
+                                            : widget.users[1].username,
+                                        "id": widget.conversationId
+                                      },
+                                      "receiver": {"username": widget.username},
+                                      "conversationId": widget.conversationId
                                     },
-                                    "receiver": {"username": widget.username},
-                                    "conversationId": widget.conversationId
-                                  },
-                                );
+                                  );
+                                } else {
+                                  logger.d('Empty message');
+                                }
                               },
                               child: const Icon(
                                 Icons.send_rounded,

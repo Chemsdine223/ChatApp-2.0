@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:chat_app/Logic/Cubit/RegistrationFormCubit/registration_form_cubit.dart';
 
 import 'package:chat_app/Widgets/info_tile.dart';
+// import 'package:http/io_client.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -96,23 +97,7 @@ class _ConfirmationLayoutState extends ConsumerState<ConfirmationLayout> {
                               backgroundColor: Colors.grey.shade400,
                             ),
 
-                      // Container(
-                      //     height: 100,
-                      //     width: 100,
-
-                      //     decoration: BoxDecoration(
-                      //       color: Colors.grey.shade400,
-                      //       shape: BoxShape.circle,
-                      //       image: DecorationImage(
-                      //         image: AssetImage(imagePath),
-                      //         fit: BoxFit.fill,
-                      //       ),
-                      //     ),
-                      //     // child: Image.file(
-                      //     //   File(imagePath),
-                      //     //   fit: BoxFit.fill,
-                      //     // ),
-                      //   ),
+                   
                     ],
                   ),
                 ),

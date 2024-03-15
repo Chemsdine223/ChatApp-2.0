@@ -39,12 +39,14 @@ class _ContactScreenState extends State<ContactScreen> {
                 itemBuilder: (context, index) {
                   return ListTile(
                     onTap: () {
+                      // print('object');
                       conversationsCubit.createConversation(
                           widget.conversations,
                           state.contacts[index].phones[0].number,
                           context);
-                      conversationsCubit.getConversations();
-                      Navigator.pop(context);
+                      // print(state.contacts[index].phones[0].number);
+                      // conversationsCubit.getConversations();
+                      // Navigator.pop(context);
                     },
                     leading: CircleAvatar(
                       backgroundColor: Colors.grey.shade200,

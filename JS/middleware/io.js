@@ -169,28 +169,35 @@ function setupSocket(server) {
           sender: senderData,
           room: chatRoom._id,
           receiver: receiverData,
+          
         });
+
+        await message.save();
 
         socket.to(socket.id);
 
         chatRoom.messages.push(message);
         await chatRoom.save();
+    
+        io.to(data.receiver.id).emit("message", {
+          conversationId: chatRoom._id,
+          message,
+        });
+
         sendMessageNotification(
           senderData.username,
           message.content,
           receiverData.deviceToken
         );
 
-        io.to(data.receiver.id).emit("message", {
-          conversationId: chatRoom._id,
-          message,
-        });
 
         // Emit the message to the receiver's room
         io.to(receiverData.id).emit("message", {
           conversationId: chatRoom._id,
           message,
         });
+
+        
 
         // io.emit("message", {
         //     conversationId: chatRoom._id,

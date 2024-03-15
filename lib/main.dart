@@ -10,7 +10,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:chat_app/Theme/theme_cubit.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'Constants/constants.dart';
 import 'Logic/Cubit/Authentication/auth_cubit.dart';
@@ -91,7 +90,7 @@ void main() async {
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
 
-  print("Handling a background message: ${message.messageId}");
+  logger.d("Handling a background message: ${message.messageId}");
 }
 
 class MyApp extends ConsumerWidget {
@@ -151,7 +150,6 @@ class MyApp extends ConsumerWidget {
                 }
               },
               builder: (context, state) {
-                // context.watch<ConversationsCubit>().state;
                 if (state is AuthenticationLoading) {
                   return const Scaffold(
                     body: Center(

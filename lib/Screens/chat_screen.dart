@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:chat_app/Constants/constants.dart';
 import 'package:chat_app/Widgets/avatar_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -126,12 +127,31 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                   child: ListView.builder(
                     itemCount: state.conversations.length,
                     itemBuilder: (context, index) {
+                      // logger.f(state.conversations.)
                       final conversation = state.conversations[index];
                       final otherUser =
                           state.conversations[index].users[0].id ==
                                   NetworkServices.id
                               ? state.conversations[index].users[1]
                               : state.conversations[index].users[0];
+                      logger.e(conversation.messages.last.createdAt);
+
+                      state.conversations.sort((a, b) {
+                        final lastMessageA =
+                            a.messages.isNotEmpty ? a.messages.last : null;
+                        final lastMessageB =
+                            b.messages.isNotEmpty ? b.messages.last : null;
+                        if (lastMessageA != null && lastMessageB != null) {
+                          return lastMessageB.createdAt
+                              .compareTo(lastMessageA.createdAt);
+                        } else if (lastMessageA != null) {
+                          return -1; // Move conversations with a last message to the top
+                        } else if (lastMessageB != null) {
+                          return 1; // Move conversations with a last message to the top
+                        } else {
+                          return 0;
+                        }
+                      });
                       return Slidable(
                         endActionPane: ActionPane(
                           key: ValueKey(index),

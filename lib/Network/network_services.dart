@@ -6,14 +6,13 @@ import 'package:chat_app/Logic/Offline/offline_conversations.dart';
 import 'package:chat_app/Logic/Offline/shared_preferences_service.dart';
 import 'package:chat_app/Network/firebase_storage_service.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+
 import 'package:flutter_contacts/flutter_contacts.dart';
-import 'package:image_picker/image_picker.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:chat_app/Models/conversation.dart';
 import 'package:chat_app/Models/user.dart';
 import 'package:http/http.dart' as http;
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../Constants/constants.dart';
 // import '';
@@ -198,6 +197,7 @@ class NetworkServices {
   Future<Conversation> newChat(String phone) async {
     // log(createConvo);
     await loadTokens();
+
     final response = await http.post(
       Uri.parse(createConvo),
       headers: {
@@ -208,6 +208,8 @@ class NetworkServices {
         "phone": phone,
       }),
     );
+
+    logger.f(response.body);
     final data = jsonDecode(response.body);
     // log(response.body.toString());
     if (response.statusCode == 201) {
@@ -236,6 +238,7 @@ class NetworkServices {
     ).timeout(
       const Duration(seconds: 20),
       onTimeout: () {
+        // conversationsCubit.getLocalConversations();
         return http.Response(
             jsonEncode({
               'message': 'Connection timeout',
@@ -243,6 +246,8 @@ class NetworkServices {
             408);
       },
     );
+
+    logger.f(response.body);
 
     if (response.statusCode == 200) {
       Prefs.remove(OfflineService.keyConversations);

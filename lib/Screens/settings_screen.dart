@@ -5,7 +5,7 @@ import 'package:chat_app/Constants/constants.dart';
 import 'package:chat_app/Logic/Cubit/Authentication/auth_cubit.dart';
 import 'package:chat_app/Logic/Cubit/ConversationsCubit/conversations_cubit.dart';
 import 'package:chat_app/Logic/Cubit/DeleteUser/delete_user_cubit.dart';
-import 'package:chat_app/Network/firebase_storage_service.dart';
+
 import 'package:chat_app/Theme/theme_cubit.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +13,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../Logic/Cubit/RegistrationFormCubit/registration_form_cubit.dart';
-import '../Network/network_services.dart';
+
 import '../Widgets/custom_button.dart';
 import '../Widgets/overlay.dart';
 
